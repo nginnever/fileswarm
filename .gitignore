@@ -30,3 +30,5 @@ build/Release
 node_modules
 
 lib
+app/dist/bundle.js
+fileswarm-darwin-x64
