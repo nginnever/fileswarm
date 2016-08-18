@@ -7,7 +7,8 @@
     "start": "./node_modules/electron-prebuilt/dist/Electron.app/Contents/MacOS/Electron .",
     "dev": "./node_modules/.bin/webpack-dev-server --content-base dist --inline --hot",
     "electron-rebuild": "./node_modules/.bin/electron-rebuild",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-osx": "node electron-build-osx.js"
   },
   "repository": {
     "type": "git",
