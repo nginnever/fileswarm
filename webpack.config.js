@@ -1,5 +1,6 @@
 const webpack = require('webpack')
 const webpackTargetElectronRenderer = require('webpack-target-electron-renderer')
+const path = require('path')
 
 const config = {
   entry: {
@@ -17,7 +18,9 @@ const config = {
         loader: 'json-loader'
       },
       { test: /\.css$/, loader: 'style-loader!css-loader' },
-      { test: /\.less$/, loader: 'style-loader!css-loader!less-loader'}
+      { test: /\.less$/, loader: 'style-loader!css-loader!less-loader'},
+      { test: /\.scss$/, loaders: ['style', 'css', 'sass']},
+      { test: /\.(png|woff|woff2|eot|ttf|svg)$/, loader: 'url-loader?limit=100000' }
     ]
   },
   resolve: {

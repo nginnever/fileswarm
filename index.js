@@ -17,6 +17,8 @@ function createWindow() {
 
   mainWindow.loadURL('file://' + __dirname + '/app/dist/index.html')
 
+  mainWindow.setTitle('fileswarm')
+
   mainWindow.webContents.openDevTools()
 
   mainWindow.on('closed', () => {

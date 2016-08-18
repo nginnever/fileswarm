@@ -1,4 +1,6 @@
 require('../app/less/main.less')
+require('!style!css!sass!../app/sass/photon.scss')
+//require('../app/sass/main.less')
 
 import React from 'react'
 import ReactDOM from 'react-dom'
