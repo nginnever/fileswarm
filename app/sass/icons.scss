@@ -175,7 +175,7 @@
 .icon-loop:before { content: '\e895'; } /* '' */
 .icon-switch:before { content: '\e896'; } /* '' */
 .icon-play:before { content: '\e897'; } /* '' */
-.icon-stop:before { content: '\e898'; } /* '' */
+.icon-stop:before { color: #ff0000; content: '\e898'; } /* '' */
 .icon-pause:before { content: '\e899'; } /* '' */
 .icon-record:before { content: '\e89a'; } /* '' */
 .icon-to-end:before { content: '\e89b'; } /* '' */
@@ -238,7 +238,7 @@
 .icon-drive:before { content: '\e8d4'; } /* '' */
 .icon-bucket:before { content: '\e8d5'; } /* '' */
 .icon-thermometer:before { content: '\e8d6'; } /* '' */
-.icon-key:before { content: '\e8d7'; } /* '' */
+.icon-key:before { color: #fff; content: '\e8d7'; } /* '' */
 .icon-flow-cascade:before { content: '\e8d8'; } /* '' */
 .icon-flow-branch:before { content: '\e8d9'; } /* '' */
 .icon-flow-tree:before { content: '\e8da'; } /* '' */
