@@ -3,12 +3,12 @@ require('!style!css!sass!../app/sass/photon.scss')
 import React from 'react'
 import ReactDOM from 'react-dom'
 import {Router, Route, hashHistory} from 'react-router'
-//import {Router, Route, hashHistory} from 'react-router'
 import {createStore} from 'redux'
 import {Provider} from 'react-redux'
 import reducer from './reducers/reducer'
-import App from './components/App'
 import {MainContainer} from './components/Main'
+import {HomeContainer} from './components/Home'
+import {SeedContainer} from './components/Seed'
 import {api} from './services'
 
 
@@ -20,8 +20,9 @@ store.dispatch({
   }
 })
 
-const routes = <Route component={App}>
-  <Route path='/' component={MainContainer} />
+const routes = <Route component={MainContainer}>
+  <Route path='/' component={HomeContainer} />
+  <Route path='/seeding' component={SeedContainer} />
 </Route>
 
 ReactDOM.render(

@@ -11,7 +11,7 @@ function createWindow() {
   mainWindow = new BrowserWindow(
     {
       icon:'assets/image.png', 
-      width: 1000, 
+      width: 900, 
       height: 600,
       title: 'Fileswarm'
     }
