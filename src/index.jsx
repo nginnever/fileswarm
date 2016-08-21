@@ -7,8 +7,8 @@ import {createStore} from 'redux'
 import {Provider} from 'react-redux'
 import reducer from './reducers/reducer'
 import {MainContainer} from './containers/MainContainer'
-import {HomeContainer} from './components/Home'
-import {SeedContainer} from './components/Seed'
+import {HomeContainer} from './containers/HomeContainer'
+import {SeedContainer} from './containers/SeedContainer'
 import {store} from './store'
 
 const routes = <Route component={MainContainer}>

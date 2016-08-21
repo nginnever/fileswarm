@@ -1,6 +1,5 @@
 import React from 'react'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
-import {connect} from 'react-redux'
 
 export const Seed = React.createClass({
   mixins: [PureRenderMixin],
@@ -40,10 +39,3 @@ export const Seed = React.createClass({
 		)
 	}
 })
-
-function mapStateToProps(state) {
-  console.log(state.toJSON())
-  return state.toJSON()
-}
-
-export const SeedContainer = connect(mapStateToProps)(Seed)
