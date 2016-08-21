@@ -8,11 +8,11 @@ export const Dashboard = React.createClass({
 		return(
 			<nav className="nav-group">
 			  <h5 className="nav-group-title">Dashboard</h5>
-			  <Link to={'/'} className="nav-group-item active">
+			  <Link to={'/'} className="nav-group-item">
 			    <span className="icon icon-home"></span>
 			    Fileswarm
 			  </Link>
-			  <Link to={'/seeding'} className="nav-group-item">
+			  <Link to={'/seeding'} className="nav-group-item active">
 			    <span className="icon icon-upload"></span>
 			    Seeding
 			  </Link>

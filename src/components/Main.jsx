@@ -26,9 +26,3 @@ export const Main = React.createClass({
     )
   }
 })
-
-function mapStateToProps(state) {
-  return state.toJSON()
-}
-
-export const MainContainer = connect(mapStateToProps)(Main)

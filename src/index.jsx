@@ -6,19 +6,10 @@ import {Router, Route, hashHistory} from 'react-router'
 import {createStore} from 'redux'
 import {Provider} from 'react-redux'
 import reducer from './reducers/reducer'
-import {MainContainer} from './components/Main'
+import {MainContainer} from './containers/MainContainer'
 import {HomeContainer} from './components/Home'
 import {SeedContainer} from './components/Seed'
-import {api} from './services'
-
-
-const store = createStore(reducer)
-store.dispatch({
-  type: 'SET_STATE',
-  state: {
-    api: api
-  }
-})
+import {store} from './store'
 
 const routes = <Route component={MainContainer}>
   <Route path='/' component={HomeContainer} />

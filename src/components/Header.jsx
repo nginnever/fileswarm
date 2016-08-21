@@ -13,10 +13,10 @@ export const Header = React.createClass({
 			      <button className="btn btn-default">
 			        <span className="icon icon-home"></span>
 			      </button>
-			      <button className="btn btn-default">
+			      <button className="btn btn-default active">
 			        <span className="icon icon-upload"></span>
 			      </button>
-			      <button className="btn btn-default active">
+			      <button className="btn btn-default">
 			        <span className="icon icon-folder"></span>
 			      </button>
 			      <button className="btn btn-default">
@@ -26,7 +26,7 @@ export const Header = React.createClass({
 
 			    <button className="btn btn-default">
 			      <span className="icon icon-network icon-text" style={{color: '#20BE6F'}}></span>
-			      14949495 Files
+			      1337 Files Online
 			    </button>
 			    <button className="btn btn-default btn-dropdown pull-right">
 			      <span className="icon icon-user"></span>

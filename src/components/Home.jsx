@@ -12,8 +12,8 @@ export const Home = React.createClass({
 })
 
 function mapStateToProps(state) {
-  console.log(state.toJSON())
-  return state.toJSON()
+  console.log(state.mainReducer.toJSON())
+  return state.mainReducer.toJSON()
 }
 
 export const HomeContainer = connect(mapStateToProps)(Home)
