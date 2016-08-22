@@ -1,4 +1,5 @@
 import Web3 from 'web3'
+import {store} from '../store'
 // import lightwallet from 'eth-lightwallet'
 // import web3hook from 'hooked-web3-provider'
 
@@ -149,38 +150,69 @@ function hex_to_ascii(str1) {
     str += String.fromCharCode(parseInt(hex.substr(n, 2), 16))
   }
   return str
-} 
-
-export const publish = (name, hash) => {
-  return new Promise((resolve, reject) => {
-    const registryContract = web3.eth.contract(abi)
-    // local test net
-    // const regInstance = registryContract.at('0xb5f546d5bc8ab6ce0a4091c8bf906800627912cd')
-    // server test net
-    const regInstance = registryContract.at('0x7b7ac61b0c77fbde14b61eb31494abd05f4fd0ae')
-    var hash1 = hash.substring(0, 17)
-    var hash2 = hash.substring(17, hash.length)
-    regInstance.init(name, hash1, hash2, {from: web3.eth.accounts[0], gas:150000}, (err, txhash) => {
-      resolve(txhash)
-    })
-
-  })
-
 }
 
-export const init = (provider) => {
-  return new Promise((resolve, reject) => {
-    if (typeof web3 !== 'undefined') {
-      web3 = new Web3(web3.currentProvider);
-    } else {
-      // set the provider you want from Web3.providers
-      // local server
-      //web3 = new Web3(new Web3.providers.HttpProvider("http://192.168.0.28:8545"))
+function setWeb3() {
+  if (typeof web3 !== 'undefined') {
+    web3 = new Web3(web3.currentProvider);
+  } else {
+    // set the provider you want from Web3.providers
+    // local server
+    //web3 = new Web3(new Web3.providers.HttpProvider("http://192.168.0.28:8545"))
 
-      // demo server
-      web3 = new Web3(new Web3.providers.HttpProvider("http://149.56.133.176:8545"))
-    } 
+    // demo server
+    web3 = new Web3(new Web3.providers.HttpProvider("http://149.56.133.176:8545"))
+  }
+
+  return web3
+}
+export const getBalance = (num) => {
+  web3 = setWeb3()
+
+  const balance = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[num]))
+
+  store.dispatch({
+    type: 'GET_BALANCE',
+    balance: { balance: balance.c }
   })
-  // options: provider
+
+  return balance
+}
+
+export const setAccount = (num) => {
+  console.log('setting account')
+  store.dispatch({
+    type: 'GET_ACCOUNT',
+    activeAccount: { activeAccount: num }
+  })
+}
+
+export const getAccounts = () => {
+  return new Promise((resolve, reject) => {
+    web3 = setWeb3()
+    web3.eth.getAccounts((error, result) => {
+      store.dispatch({
+        type: 'GET_ACCOUNTS',
+        accounts: { accounts: result }
+      })
+      resolve(result)
+    })
+  })
+}
+
+export const unlock = (account, password) => {
+  return new Promise((resolve, reject) => {
+    web3 = setWeb3()
+    web3.personal.unlockAccount(web3.eth.accounts[account], password, (err, res) => {
+      if (err) {
+        reject(err)
+      }
+      store.dispatch({
+        type: 'GET_UNLOCKED',
+        unlocked: {unlocked: true}
+      })
+      resolve(res)
+    })
+  })
 }
 

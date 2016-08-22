@@ -1,5 +1,6 @@
 import React from 'react'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
+import Modal from 'react-modal'
 
 export const Header = React.createClass({
   mixins: [PureRenderMixin],
@@ -28,12 +29,22 @@ export const Header = React.createClass({
 			      <span className="icon icon-network icon-text" style={{color: '#20BE6F'}}></span>
 			      1337 Files Online
 			    </button>
-			    <button className="btn btn-default btn-dropdown pull-right">
-			      <span className="icon icon-user"></span>
+			    <button className="btn btn-default pull-right" onClick={this.props.openAccounts}>
+			      <span className="icon icon-user pull-right"></span>
 			    </button>
+			    <Modal className="accounts-modal pull-right"
+			      style={this.props.customModalStyles}
+			      isOpen={this.props.isOpenAccounts}
+			      onRequestClose={this.props.closeAccounts}>
+
+				    <select ref="ctype" style={{height: 31, marginTop: -1}} className="pull-right" onChange={() => this.props.selectAcc(this.refs.ctype)}>
+				      {this.props.accounts}
+				    </select>
+			    </Modal>
+
 			    <button className="btn btn-default pull-right">
 			      
-			      Balance: Ξ420.2992944
+			      Balance: Ξ{this.props.balance[0] + '.' + this.props.balance[1]}
 			    </button>
 			  </div>
 			</header>

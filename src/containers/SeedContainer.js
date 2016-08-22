@@ -1,8 +1,14 @@
-import {connect} from 'react-redux'
+import {store} from '../store'
+import React from 'react'
 import {Seed} from '../components/Seed'
+import {api} from '../services'
 
-function mapStateToProps(state) {
-  return state.mainReducer.toJSON()
-}
-
-export const SeedContainer = connect(mapStateToProps)(Seed)
+export const SeedContainer = React.createClass({
+	componentWillMount: function() {
+	},
+	render: function() {
+		return (
+      <Seed />
+		)
+	}
+})

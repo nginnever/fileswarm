@@ -40,3 +40,19 @@
 .pane-one-third {
   width: 33.3%;
 }
+
+.my-modal {
+  height: 110px;
+  position: relative;
+  top: 460px;
+  width: 300px;
+}
+
+.accounts-modal {
+  position: relative;
+  top: 40px;
+  width: 300px;
+  background-opacity: 0 !important;
+  z-index: 1000;
+  backdrop: false;
+}

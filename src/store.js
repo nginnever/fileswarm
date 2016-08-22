@@ -1,17 +1,19 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux'
-import thunk from 'redux-thunk'
+//import thunk from 'redux-thunk'
 
 // add middleware to createStore
-const createStoreWithMiddleware = applyMiddleware(thunk)(createStore)
+//csconst createStoreWithMiddleware = applyMiddleware(thunk)(createStore)
 
 // App Reducers
 import reducer from './reducers/reducer'
+import account from './reducers/account'
 
 const reducers = combineReducers({
-  mainReducer: reducer
+  mainReducer: reducer,
+  accountReducer: account
   // more
 })
 
-const store = createStoreWithMiddleware(reducers)
+const store = createStore(reducers)
 
 export { store }
