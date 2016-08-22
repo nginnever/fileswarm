@@ -8,16 +8,17 @@ export const FooterContainer = React.createClass({
     var currentStore = store.getState()
   	return {
   		isOpenUnlock: false,
-      activeAccount: 0,
+      activeAccount: currentStore.accountReducer.toJSON().activeAccount,
       unlocked: false
   	}
   },
 	componentWillMount: function() {
 		var _this = this
     store.subscribe(function() {
-      console.log('wee')
+      console.log('footer store subscription hit')
       var currentStore = store.getState()
       _this.setState({
+        activeAccount: currentStore.accountReducer.toJSON().activeAccount,
         unlocked: currentStore.accountReducer.toJSON().unlocked
       })
     })
@@ -36,10 +37,8 @@ export const FooterContainer = React.createClass({
   },
   unlockWithPass: function(acc, pass) {
     var _this = this
-    console.log(acc)
-    console.log(pass.value)
+    console.log('unlocking account: ' + acc)
     api.unlock(acc, pass.value).then((res) => {
-      console.log(res)
       _this.setState({
         isOpenUnlock: false
       })

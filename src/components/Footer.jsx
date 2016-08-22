@@ -26,7 +26,6 @@ export const Footer = React.createClass({
 			           </form>
 			           <button onClick={() => this.props.unlockWithPass(this.props.activeAccount, this.refs.gpass)}>Enter</button>
 			      </Modal>
-
 			      <span className="icon icon-key"></span>
 			      &nbsp;{this.props.unlocked ? 'Lock' : 'Unlock'}
 			    </button>

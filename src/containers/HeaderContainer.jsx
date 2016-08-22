@@ -4,9 +4,11 @@ import {Header} from '../components/Header'
 import {api} from '../services'
 
 var accs = []
+let currentStore
 
 export const HeaderContainer = React.createClass({
   getInitialState: function() {
+    currentStore = store.getState()
   	const customStyles = {
   		overlay: {
   			backgroundColor: 'rgba(0, 0, 0, 0.0)'
@@ -16,44 +18,52 @@ export const HeaderContainer = React.createClass({
   		}
   	}
   	return {
-  		balance: 0,
-  		activeAccount: 0,
-  		accounts: [],
+  		balance: currentStore.accountReducer.toJSON().balance,
+  		activeAccount: currentStore.accountReducer.toJSON().activeAccount,
+  		accounts: currentStore.accountReducer.toJSON().accounts,
   		isOpenAccounts: false,
-  		customModalStyles: customStyles
+  		customModalStyles: customStyles,
+      options: []
   	}
   },
 	componentWillMount: function() {
 		var _this = this
 
 		store.subscribe(function() {
-			console.log('wee')
-      console.log(_this.state.activeAccount)
-			var currentStore = store.getState()
-      console.log(currentStore)
+			console.log('header store subscribe triggered')
+			currentStore = store.getState()
 			_this.setState({
 				balance: currentStore.accountReducer.toJSON().balance,
-				activeAccount: currentStore.accountReducer.toJSON().activeAccount,
+				activeAccount: currentStore.accountReducer.toJSON().activeAccount
 			})
+      console.log('rerendering accounts drop down')
+      _this.renderAccounts()
 		})
+    console.log('rendering accounts 1st time')
     _this.renderAccounts()
-    const bal = api.getBalance(this.state.activeAccount)
 	},
   renderAccounts: function() {
-    api.getAccounts().then((res) => {
-      let rand
-      for (var i = 0; i < res.length; i++) {
-        rand = Math.floor(Math.random()*100000000000000000)
-        if (i == this.state.activeAccount) {
-          accs.push(<option key={rand} value={i} defaultValue="selected">{res[i]}</option>)
-        } else {
-          accs.push(<option key={rand} value={i}>{res[i]}</option>)
-        }
+    var _this = this
+    accs = []
+    console.log(_this.state.accounts)
+    console.log(accs)
+    currentStore = store.getState()
+    let rand
+    console.log(currentStore.accountReducer.toJSON().activeAccount)
+    for (var i = 0; i < currentStore.accountReducer.toJSON().accounts.length; i++) {
+      rand = Math.floor(Math.random()*100000000000000000)
+      if (i == currentStore.accountReducer.toJSON().activeAccount) {
+        accs.push(<option key={rand} value={i} selected="selected">{currentStore.accountReducer.toJSON().accounts[i]}</option>)
+      } else {
+        accs.push(<option key={rand} value={i}>{currentStore.accountReducer.toJSON().accounts[i]}</option>)
       }
-      this.setState({
-        accounts: accs
-      })
+    }
+    console.log(accs)
+
+    _this.setState({
+      options: accs
     })
+
   },
   openAccounts: function() {
     var _this = this
@@ -68,7 +78,7 @@ export const HeaderContainer = React.createClass({
     })
   },
   selectAcc: function(refs) {
-    console.log(refs.value)
+    console.log('setting account to: ' + refs.value)
     var _this = this
     api.setAccount(refs.value)
     _this.setState({
@@ -85,7 +95,8 @@ export const HeaderContainer = React.createClass({
         closeAccounts={this.closeAccounts}
         isOpenAccounts={this.state.isOpenAccounts}
         customModalStyles={this.state.customModalStyles}
-        selectAcc={this.selectAcc} />
+        selectAcc={this.selectAcc}
+        options={this.state.options} />
 		)
 	}
 })

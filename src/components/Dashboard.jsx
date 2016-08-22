@@ -1,6 +1,6 @@
 import React from 'react'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
-import {hashHistory, Link} from 'react-router'
+import {Link} from 'react-router'
 
 export const Dashboard = React.createClass({
   mixins: [PureRenderMixin],

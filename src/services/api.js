@@ -180,7 +180,6 @@ export const getBalance = (num) => {
 }
 
 export const setAccount = (num) => {
-  console.log('setting account')
   store.dispatch({
     type: 'GET_ACCOUNT',
     activeAccount: { activeAccount: num }

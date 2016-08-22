@@ -5,6 +5,8 @@ import Modal from 'react-modal'
 export const Header = React.createClass({
   mixins: [PureRenderMixin],
 	render: function() {
+		console.log('header render active account: ' + this.props.activeAccount)
+		console.log(this.props.options)
 		return(
 			<header className="toolbar toolbar-header" style={{flexDirection:'row' }}>
 			    <img src={'logo.svg'} style={{height: 25, marginTop: 5, marginLeft: 5, marginRight: 0}} />
@@ -38,7 +40,7 @@ export const Header = React.createClass({
 			      onRequestClose={this.props.closeAccounts}>
 
 				    <select ref="ctype" style={{height: 31, marginTop: -1}} className="pull-right" onChange={() => this.props.selectAcc(this.refs.ctype)}>
-				      {this.props.accounts}
+				      {this.props.options}
 				    </select>
 			    </Modal>
 
