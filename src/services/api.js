@@ -166,23 +166,29 @@ function setWeb3() {
 
   return web3
 }
+
 export const getBalance = (num) => {
-  web3 = setWeb3()
+  return new Promise((resolve, reject) => {
+    web3 = setWeb3()
 
-  const balance = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[num]))
+    const balance = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[num]))
 
-  store.dispatch({
-    type: 'GET_BALANCE',
-    balance: { balance: balance.c }
+    store.dispatch({
+      type: 'GET_BALANCE',
+      balance: { balance: balance.c }
+    })
+
+    resolve(balance)
   })
-
-  return balance
 }
 
 export const setAccount = (num) => {
-  store.dispatch({
-    type: 'GET_ACCOUNT',
-    activeAccount: { activeAccount: num }
+  return new Promise((resolve, reject) => {
+    store.dispatch({
+      type: 'GET_ACCOUNT',
+      activeAccount: { activeAccount: num }
+    })
+    resolve(true)
   })
 }
 
@@ -215,3 +221,19 @@ export const unlock = (account, password) => {
   })
 }
 
+// TODO error handle
+export const init = () => {
+  return new Promise((resolve, reject) => {
+    console.log('begin setting up store')
+    console.log('calling set account store')
+    setAccount(0).then(() => {
+      console.log('getting accounts from geth')
+      getAccounts().then((res) => {
+        console.log('getting balance from store')
+        getBalance(0).then(() => {
+          resolve()
+        })
+      })
+    })
+  })
+}
