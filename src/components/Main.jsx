@@ -6,6 +6,8 @@ import {FooterContainer} from '../containers/FooterContainer'
 
 export const Main = React.createClass({
   mixins: [PureRenderMixin],
+  componentWillMount: function() {
+  },
   render: function() {
     return (
       <div className="window">

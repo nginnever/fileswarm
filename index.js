@@ -23,7 +23,7 @@ function createWindow() {
 
   mainWindow.setTitle('fileswarm')
 
-  mainWindow.webContents.openDevTools()
+  //mainWindow.webContents.openDevTools()
 
   mainWindow.on('closed', () => {
     mainWindow = null
