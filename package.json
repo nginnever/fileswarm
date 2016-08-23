@@ -4,7 +4,7 @@
   "description": "distributed file storage platform",
   "main": "index.js",
   "scripts": {
-    "start": "./node_modules/electron-prebuilt/dist/Electron.app/Contents/MacOS/Electron .",
+    "start": "./node_modules/.bin/electron .",
     "dev": "./node_modules/.bin/webpack-dev-server --content-base dist --inline --hot",
     "electron-rebuild": "./node_modules/.bin/electron-rebuild",
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -7,7 +7,7 @@ import {createStore} from 'redux'
 import {Provider} from 'react-redux'
 import reducer from './reducers/reducer'
 import {Main} from './components/Main'
-import {HomeContainer} from './containers/HomeContainer'
+import {FilesContainer} from './containers/FilesContainer'
 import {SeedContainer} from './containers/SeedContainer'
 import {store} from './store'
 import {api} from './services'
@@ -16,7 +16,7 @@ import Loading from 'react-loading'
   
 // set routes
 const routes = <Route component={Main}>
-  <Route path='/' component={HomeContainer} />
+  <Route path='/' component={FilesContainer} />
   <Route path='/seeding' component={SeedContainer} />
 </Route>
 
@@ -43,4 +43,4 @@ function testLoader() {
 	})
 }
 
-setTimeout(testLoader,8000)
+setTimeout(testLoader,0)

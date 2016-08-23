@@ -50,3 +50,12 @@ td {
     border-right: 0;
   }
 }
+
+table-wrapper {
+  position:relative;
+}
+table-scroll {
+  height:150px;
+  overflow:scroll;  
+  margin-top:20px;
+}
