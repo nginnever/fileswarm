@@ -8,6 +8,7 @@ table {
   border-collapse: separate;
   font-size: 12px;
   text-align: left;
+  resize: both;
 }
 
 thead {
@@ -54,8 +55,7 @@ td {
 table-wrapper {
   position:relative;
 }
-table-scroll {
-  height:150px;
+.table-scroll {
+  height:100px;
   overflow:scroll;  
-  margin-top:20px;
 }

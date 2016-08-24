@@ -5,8 +5,7 @@ export const Files = React.createClass({
   mixins: [PureRenderMixin],
 	render: function() {
 		return(
-			<div id="table-wrapper">
-  <div id="table-scroll">
+      <div className="table-scroll">
 				<table className="table-striped">
 				  <thead>
 				    <tr>
@@ -38,8 +37,7 @@ export const Files = React.createClass({
 				    </tr>
 				  </tbody>
 				</table>
-				  </div>
-</div>
+		  </div>
 		)
 	}
 })
