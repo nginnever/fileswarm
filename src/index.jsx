@@ -9,6 +9,7 @@ import reducer from './reducers/reducer'
 import {Main} from './components/Main'
 import {FilesContainer} from './containers/FilesContainer'
 import {SeedContainer} from './containers/SeedContainer'
+import {AccountContainer} from './containers/AccountContainer'
 import {store} from './store'
 import {api} from './services'
 import Loading from 'react-loading'
@@ -18,6 +19,7 @@ import Loading from 'react-loading'
 const routes = <Route component={Main}>
   <Route path='/' component={FilesContainer} />
   <Route path='/seeding' component={SeedContainer} />
+  <Route path='/account' component={AccountContainer} />
 </Route>
 
 // render react after store init hack
@@ -43,4 +45,4 @@ function testLoader() {
 	})
 }
 
-setTimeout(testLoader,0)
+setTimeout(testLoader, 5000)

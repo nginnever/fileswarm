@@ -65,7 +65,8 @@ export const HeaderContainer = React.createClass({
     })
 
   },
-  openAccounts: function() {
+  openAccounts: function(test) {
+    console.log(test)
     var _this = this
     _this.setState({
       isOpenAccounts: true

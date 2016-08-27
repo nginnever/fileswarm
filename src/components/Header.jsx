@@ -16,7 +16,7 @@ export const Header = React.createClass({
 			      <button className="btn btn-default">
 			        <span className="icon icon-home"></span>
 			      </button>
-			      <button className="btn btn-default active">
+			      <button className="btn btn-default">
 			        <span className="icon icon-upload"></span>
 			      </button>
 			      <button className="btn btn-default">
@@ -39,7 +39,7 @@ export const Header = React.createClass({
 			      isOpen={this.props.isOpenAccounts}
 			      onRequestClose={this.props.closeAccounts}>
 
-				    <select ref="ctype" style={{height: 31, marginTop: -1}} className="pull-right" onChange={() => this.props.selectAcc(this.refs.ctype)}>
+				    <select id="accselect" ref="ctype" style={{height: 31, marginTop: -1}} className="pull-right" onChange={() => this.props.selectAcc(this.refs.ctype)}>
 				      {this.props.options}
 				    </select>
 			    </Modal>

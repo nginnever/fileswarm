@@ -1,7 +1,7 @@
 import React from 'react'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
 import {HeaderContainer} from '../containers/HeaderContainer'
-import {Dashboard} from './Dashboard'
+import {DashboardContainer} from '../containers/DashboardContainer'
 import {FooterContainer} from '../containers/FooterContainer'
 
 export const Main = React.createClass({
@@ -15,7 +15,7 @@ export const Main = React.createClass({
         <div className="window-content">
           <div className="pane-group">
             <div className="pane-sm sidebar">
-              <Dashboard />
+              <DashboardContainer />
             </div>
             <div className="pane">
               {this.props.children}
