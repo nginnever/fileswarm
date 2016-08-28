@@ -143,6 +143,7 @@ export const iterate = () => {
 
 }
 
+// Internal functions
 function hex_to_ascii(str1) {
   var hex  = str1.toString()
   var str = ''
@@ -167,6 +168,7 @@ function setWeb3() {
   return web3
 }
 
+// ACCOUNT API
 export const getBalance = (num) => {
   return new Promise((resolve, reject) => {
     web3 = setWeb3()
@@ -221,6 +223,7 @@ export const unlock = (account, password) => {
   })
 }
 
+// Initialization tasks
 // TODO error handle
 export const init = () => {
   return new Promise((resolve, reject) => {
@@ -237,3 +240,25 @@ export const init = () => {
     })
   })
 }
+
+// SEEDING API
+export const getMax = (input) => {
+  return new Promise((resolve, reject) => {
+    console.log('setting max diskspace allowed')
+    store.dispatch({
+      type: 'GET_MAXDISK',
+      max: {max: input}
+    })
+  })
+}
+
+export const getDiskspace = (input) => {
+  return new Promise((resolve, reject) => {
+    console.log('setting diskspace used')
+    store.dispatch({
+      type: 'GET_DISKSPACE',
+      disk: {disk: input}
+    })
+  })
+}
+// FILES API

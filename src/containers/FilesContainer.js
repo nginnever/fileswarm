@@ -23,6 +23,22 @@ export const FilesContainer = React.createClass({
     }
     return { fileRows: files }
   },
+  componentWillMount: function() {
+		// var _this = this
+
+		// store.subscribe(function() {
+		// 	console.log('files store subscribe triggered')
+		// 	currentStore = store.getState()
+		// 	_this.setState({
+		// 		balance: currentStore.accountReducer.toJSON().balance,
+		// 		activeAccount: currentStore.accountReducer.toJSON().activeAccount
+		// 	})
+  //     console.log('rerendering accounts drop down')
+  //     _this.renderAccounts()
+		// })
+  //   console.log('rendering accounts 1st time')
+  //   _this.renderAccounts()
+  },
 	render: function() {
 		return (
       <Files 
