@@ -5,39 +5,30 @@ export const Files = React.createClass({
   mixins: [PureRenderMixin],
 	render: function() {
 		return(
-      <div className="table-scroll">
-				<table className="table-striped">
-				  <thead>
-				    <tr>
-				      <th>Name</th>
-				      <th>Kind</th>
-				      <th>File Size</th>
-				    </tr>
-				  </thead>
-				  <tbody>
-				    <tr>
-				      <td>photon.css</td>
-				      <td>CSS</td>
-				      <td>28K</td>
-				    </tr>
-				    <tr>
-				      <td>photon.css</td>
-				      <td>CSS</td>
-				      <td>28K</td>
-				    </tr>
-				    <tr>
-				      <td>photon.css</td>
-				      <td>CSS</td>
-				      <td>28K</td>
-				    </tr>
-				    <tr>
-				      <td>photon.css</td>
-				      <td>CSS</td>
-				      <td>28K</td>
-				    </tr>
-				  </tbody>
-				</table>
-		  </div>
+			<div>
+			  <div className="table-scroll-header">  
+	        <table className="table-striped-files">
+	          <thead>
+	            <tr>
+					      <th style={{width: 200}}>Name</th>
+					      <th style={{width: 80}}>Kind</th>
+					      <th style={{width: 80}}>File Size</th>
+					      <th style={{width: 80}}>Seeders</th>
+					      <th style={{width: 150}}>Balance</th>
+					      <th style={{width: 80}}>Available</th>
+					      <th style={{width: 80}}>Download</th>
+					    </tr>
+					  </thead>
+				  </table>
+				</div>  
+	      <div className="table-scroll-files">      
+					<table className="table-striped-files">
+					  <tbody>
+					    {this.props.fileRows}
+					  </tbody>
+					</table>
+			  </div>
+			</div>  
 		)
 	}
 })

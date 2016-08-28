@@ -211,10 +211,14 @@ legend {
 
 table {
   border-collapse: collapse;
-  border-spacing: 0;
+  border-spacing: 1px;
 }
 
 td,
 th {
   padding: 0;
+}
+
+.seedcenter {
+  text-align: center;
 }

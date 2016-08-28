@@ -11,7 +11,9 @@ export const DashboardContainer = React.createClass({
 		}
 	},
   setActive: function(selected) {
-  	// BUG: state is lost when click registers between dashboard items
+  	if (selected === this.state.active) {
+      return
+    }
   	var _this = this
   	_this.setState({
   		[selected]: 'nav-group-item active',

@@ -17,7 +17,7 @@ export const Header = React.createClass({
 			        <span className="icon icon-home"></span>
 			      </button>
 			      <button className="btn btn-default">
-			        <span className="icon icon-upload"></span>
+			        <span className="icon icon-download"></span>
 			      </button>
 			      <button className="btn btn-default">
 			        <span className="icon icon-folder"></span>
