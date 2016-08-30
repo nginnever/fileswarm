@@ -6,6 +6,7 @@ export const Files = React.createClass({
 	render: function() {
 		return(
 			<div>
+			  <input ref="uploader" type="file" accept="image/*" onChange={() => this.props.getFile(this.refs.uploader)} multiple></input>
 			  <div className="table-scroll-header">  
 	        <table className="table-striped-files">
 	          <thead>

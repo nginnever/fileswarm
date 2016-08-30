@@ -1,109 +1,14 @@
 import Web3 from 'web3'
 import {store} from '../store'
+import bs58 from 'bs58'
+import IPFS from 'ipfs-api'
+//const ipfs = window.IpfsApi('localhost', '5001')
 // import lightwallet from 'eth-lightwallet'
 // import web3hook from 'hooked-web3-provider'
 
 let web3
+let ipfs
 // import {createDaemon} from '../utils/ipfs'
-
-const abi = 
-  [{
-    "constant": true,
-    "inputs": [],
-    "name": "tail",
-    "outputs": [{
-      "name": "",
-      "type": "bytes32"
-    }],
-    "type": "function"
-  }, {
-    "constant": false,
-    "inputs": [{
-      "name": "name",
-      "type": "bytes32"
-    }, {
-      "name": "hash1",
-      "type": "string"
-    }, {
-      "name": "hash2",
-      "type": "string"
-    }],
-    "name": "publish",
-    "outputs": [{
-      "name": "",
-      "type": "bool"
-    }],
-    "type": "function"
-  }, {
-    "constant": true,
-    "inputs": [{
-      "name": "",
-      "type": "bytes32"
-    }],
-    "name": "registry",
-    "outputs": [{
-      "name": "previous",
-      "type": "bytes32"
-    }, {
-      "name": "next",
-      "type": "bytes32"
-    }, {
-      "name": "hash1",
-      "type": "string"
-    }, {
-      "name": "hash2",
-      "type": "string"
-    }],
-    "type": "function"
-  }, {
-    "constant": true,
-    "inputs": [],
-    "name": "head",
-    "outputs": [{
-      "name": "",
-      "type": "bytes32"
-    }],
-    "type": "function"
-  }, {
-    "constant": true,
-    "inputs": [],
-    "name": "size",
-    "outputs": [{
-      "name": "",
-      "type": "uint256"
-    }],
-    "type": "function"
-  }, {
-    "constant": false,
-    "inputs": [{
-      "name": "name",
-      "type": "bytes32"
-    }, {
-      "name": "hash1",
-      "type": "string"
-    }, {
-      "name": "hash2",
-      "type": "string"
-    }],
-    "name": "init",
-    "outputs": [{
-      "name": "",
-      "type": "bool"
-    }],
-    "type": "function"
-  }, {
-    "constant": true,
-    "inputs": [{
-      "name": "",
-      "type": "bytes32"
-    }],
-    "name": "owners",
-    "outputs": [{
-      "name": "",
-      "type": "address"
-    }],
-    "type": "function"
-  }]
 
 
 export const search = (term) => {
@@ -166,6 +71,26 @@ function setWeb3() {
   }
 
   return web3
+}
+
+function ipfsOn () {
+  return new Promise((resolve, reject) => {
+    ipfs = IPFS('/ip4/127.0.0.1/tcp/5001')
+    //const ipfs = window.IpfsApi('localhost', '5001')
+    //console.log(ipfs)
+    // ipfs.id((err, res) => {
+    //   console.log(res)
+    //   console.log(err)
+    // })
+    ipfs.cat('QmTw6BFqgEDqUR4Sf32MEd39SLQRSQCoMpdQguzrC3ZcUn')
+    .then((id) => {
+      console.log(id)
+      resolve(id)
+    })
+    .catch(function(err) {
+      reject(err)
+    })
+  })
 }
 
 // ACCOUNT API
@@ -234,7 +159,16 @@ export const init = () => {
       getAccounts().then((res) => {
         console.log('getting balance from store')
         getBalance(0).then(() => {
-          resolve()
+          var hexenc = '1220963c590c0193ea9d4bd68f1fff7d6c8305b15bbacb464ec2983fdc3d49ff815f'
+          var testhash = bs58.encode(new Buffer(hexenc, 'hex'))
+          console.log(testhash)
+          console.log(new Buffer(hexenc, 'hex'))
+          //console.log(bs58.decode(testhash, 'utf8'))
+          console.log(new Buffer(bs58.decode(testhash)))
+          ipfsOn().then((id) => {
+            console.log(id)
+            resolve()
+          })
         })
       })
     })
@@ -261,4 +195,17 @@ export const getDiskspace = (input) => {
     })
   })
 }
+
 // FILES API
+export const getFile = (file) => {
+  return new Promise((resolve, reject) => {
+    var fr = new FileReader()
+    fr.onload = (result) => {
+      console.log(fr.result)
+      alert(fr.result)
+    }
+    fr.readAsArrayBuffer(file.files[0])
+    console.log('test')
+  })
+}
+

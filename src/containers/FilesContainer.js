@@ -1,6 +1,9 @@
+'use strict'
+
 import {store} from '../store'
 import React from 'react'
 import {Files} from '../components/Files'
+import {api} from '../services'
 
 export const FilesContainer = React.createClass({
   getInitialState: function() {
@@ -39,10 +42,15 @@ export const FilesContainer = React.createClass({
   //   console.log('rendering accounts 1st time')
   //   _this.renderAccounts()
   },
+  getFile: function(file) {
+  	api.getFile(file)
+    console.log(file.files)
+  },
 	render: function() {
 		return (
       <Files 
-        fileRows={this.state.fileRows} />
+        fileRows={this.state.fileRows} 
+        getFile={this.getFile} />
 		)
 	}
 })

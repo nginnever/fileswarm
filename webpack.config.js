@@ -4,13 +4,25 @@ const path = require('path')
 
 const config = {
   entry: {
-    app: ['webpack/hot/dev-server', './src/index.jsx']
+    app: [
+      'webpack/hot/only-dev-server',
+      './src/index.jsx'
+    ]
+  },
+  externals: {
+    // Needed for js-ipfs-api
+    net: '{}',
+    fs: '{}',
+    tls: '{}',
+    console: '{}',
+    mkdirp: '{}',
+    'require-dir': '{}'
   },
   module: {
     loaders: [
       {
-        test: /\.jsx?/,
-        exclude: /node_modules/,
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules|vendor/,
         loader: 'babel'
       },
       {  
@@ -21,10 +33,23 @@ const config = {
       { test: /\.less$/, loader: 'style-loader!css-loader!less-loader'},
       { test: /\.scss$/, loaders: ['style', 'css', 'sass']},
       { test: /\.(png|woff|woff2|eot|ttf|svg)$/, loader: 'url-loader?limit=100000' }
-    ]
+    ],
+  postLoaders: [{
+    include: /ipfs/,
+    test: /\.js$/,
+    loader: 'transform?brfs'
+    }]
   },
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    extensions: ['', '.js', '.jsx'],
+    modulesDirectories: [
+      'node_modules',
+      path.join(__dirname, 'node_modules')
+    ],
+    alias: {
+      'node_modules': path.join(__dirname + '/node_modules'),
+      'fs': path.join(__dirname + '/node_modules', 'html5-fs')
+    }
   },
   output: {
     path: __dirname + '/app/dist',
@@ -36,7 +61,7 @@ const config = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.IgnorePlugin(new RegExp("^(fs|ipc)$"))
+    new webpack.IgnorePlugin(new RegExp("^(ipc)$"))
   ]
 }
 

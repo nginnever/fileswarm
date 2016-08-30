@@ -16,7 +16,7 @@ function createWindow() {
       title: 'Fileswarm'
     }
   )
-
+console.log(window.IpfsApi('localhost', '5001'))
   menu.createMenu()
 
   mainWindow.loadURL('file://' + __dirname + '/app/dist/index.html')
