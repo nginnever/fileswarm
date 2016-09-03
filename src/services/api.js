@@ -1,13 +1,14 @@
 import Web3 from 'web3'
 import {store} from '../store'
 import bs58 from 'bs58'
-import IPFS from 'ipfs-api'
-//const ipfs = window.IpfsApi('localhost', '5001')
+//import IPFS from 'ipfs-api'
+const Buffer = require('buffer/').Buffer
+const ipfs = window.IpfsApi('localhost', '5001')
 // import lightwallet from 'eth-lightwallet'
 // import web3hook from 'hooked-web3-provider'
 
 let web3
-let ipfs
+//let ipfs
 // import {createDaemon} from '../utils/ipfs'
 
 
@@ -75,7 +76,7 @@ function setWeb3() {
 
 function ipfsOn () {
   return new Promise((resolve, reject) => {
-    ipfs = IPFS('/ip4/127.0.0.1/tcp/5001')
+    //ipfs = IPFS('/ip4/127.0.0.1/tcp/5001')
     //const ipfs = window.IpfsApi('localhost', '5001')
     //console.log(ipfs)
     // ipfs.id((err, res) => {
@@ -199,16 +200,12 @@ export const getDiskspace = (input) => {
 // FILES API
 export const getFile = (file) => {
   return new Promise((resolve, reject) => {
-    var fr = new FileReader()
-    fr.onload = (result) => {
-      console.log(fr.result)
-      ipfs.add(fr.result, (err, res) => {
-        if (err) console.log(err)
-        console.log(res)
-      })
-    }
-    fr.readAsArrayBuffer(file.files[0])
-    console.log('test')
+    const buffer = Buffer.from(file.result)
+    //console.log(buffer)
+    ipfs.add(buffer, (err, res) => {
+      if (err) console.log(err)
+      console.log(res)
+    })
   })
 }
 
