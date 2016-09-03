@@ -159,7 +159,7 @@ export const init = () => {
       getAccounts().then((res) => {
         console.log('getting balance from store')
         getBalance(0).then(() => {
-          var hexenc = '1220963c590c0193ea9d4bd68f1fff7d6c8305b15bbacb464ec2983fdc3d49ff815f'
+          var hexenc = 'f560277aa7b7ea251a142fc191eb09307a4a1bfee6f62420ec0a67398f4bbed8'
           var testhash = bs58.encode(new Buffer(hexenc, 'hex'))
           console.log(testhash)
           console.log(new Buffer(hexenc, 'hex'))
@@ -202,7 +202,10 @@ export const getFile = (file) => {
     var fr = new FileReader()
     fr.onload = (result) => {
       console.log(fr.result)
-      alert(fr.result)
+      ipfs.add(fr.result, (err, res) => {
+        if (err) console.log(err)
+        console.log(res)
+      })
     }
     fr.readAsArrayBuffer(file.files[0])
     console.log('test')
