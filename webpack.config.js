@@ -32,7 +32,9 @@ const config = {
       { test: /\.css$/, loader: 'style-loader!css-loader' },
       { test: /\.less$/, loader: 'style-loader!css-loader!less-loader'},
       { test: /\.scss$/, loaders: ['style', 'css', 'sass']},
-      { test: /\.(png|woff|woff2|eot|ttf|svg)$/, loader: 'url-loader?limit=100000' }
+      { test: /\.(png|woff|woff2|eot|ttf|svg)$/, loader: 'url-loader?limit=100000' },
+      { test: /\.coffee$/, loader: "coffee-loader" },
+      { test: /\.(coffee\.md|litcoffee)$/, loader: "coffee-loader?literate" }
     ],
   postLoaders: [{
     include: /ipfs/,
@@ -65,6 +67,7 @@ const config = {
   ]
 }
 
+// This causes error
 //config.target = webpackTargetElectronRenderer(config)
 
 module.exports = config

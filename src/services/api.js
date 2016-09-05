@@ -1,16 +1,21 @@
 import Web3 from 'web3'
 import {store} from '../store'
 import bs58 from 'bs58'
-//import IPFS from 'ipfs-api'
+import IPFS from 'ipfs-api'
+
 const Buffer = require('buffer/').Buffer
+const fileReaderStream = require('filereader-stream')
+const concat = require('concat-stream')
 const ipfs = window.IpfsApi('localhost', '5001')
+const abiFile = require('../utils/abi.js').file
+const abiManager = require('../utils/abi.js').manager
+const managerAddy = '0xa2f8d596983de088edef164d2163ae1f0d29e495'
 // import lightwallet from 'eth-lightwallet'
 // import web3hook from 'hooked-web3-provider'
 
 let web3
 //let ipfs
 // import {createDaemon} from '../utils/ipfs'
-
 
 export const search = (term) => {
   return new Promise((resolve, reject) => {
@@ -66,9 +71,9 @@ function setWeb3() {
     // set the provider you want from Web3.providers
     // local server
     //web3 = new Web3(new Web3.providers.HttpProvider("http://192.168.0.28:8545"))
-
+    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
     // demo server
-    web3 = new Web3(new Web3.providers.HttpProvider("http://149.56.133.176:8545"))
+    // web3 = new Web3(new Web3.providers.HttpProvider("http://149.56.133.176:8545"))
   }
 
   return web3
@@ -83,14 +88,15 @@ function ipfsOn () {
     //   console.log(res)
     //   console.log(err)
     // })
-    ipfs.cat('QmTw6BFqgEDqUR4Sf32MEd39SLQRSQCoMpdQguzrC3ZcUn')
-    .then((id) => {
-      console.log(id)
-      resolve(id)
-    })
-    .catch(function(err) {
-      reject(err)
-    })
+    // ipfs.cat('QmTw6BFqgEDqUR4Sf32MEd39SLQRSQCoMpdQguzrC3ZcUn')
+    // .then((id) => {
+    //   console.log(id)
+    //   resolve(id)
+    // })
+    // .catch(function(err) {
+    //   reject(err)
+    // })
+  resolve('test')
   })
 }
 
@@ -160,13 +166,14 @@ export const init = () => {
       getAccounts().then((res) => {
         console.log('getting balance from store')
         getBalance(0).then(() => {
-          var hexenc = 'f560277aa7b7ea251a142fc191eb09307a4a1bfee6f62420ec0a67398f4bbed8'
+          var hexenc = '1220bb72da8347160f5b6e001345e90d7213bd166aad262e419c98fb87b5484ef578'
           var testhash = bs58.encode(new Buffer(hexenc, 'hex'))
           console.log(testhash)
           console.log(new Buffer(hexenc, 'hex'))
           //console.log(bs58.decode(testhash, 'utf8'))
           console.log(new Buffer(bs58.decode(testhash)))
           ipfsOn().then((id) => {
+            console.log('test')
             console.log(id)
             resolve()
           })
@@ -200,12 +207,36 @@ export const getDiskspace = (input) => {
 // FILES API
 export const getFile = (file) => {
   return new Promise((resolve, reject) => {
-    const buffer = Buffer.from(file.result)
-    //console.log(buffer)
-    ipfs.add(buffer, (err, res) => {
-      if (err) console.log(err)
-      console.log(res)
-    })
+    fileReaderStream(file).pipe(concat((contents) => {
+      console.log('test')
+      console.log(contents)
+      var chunk = contents.slice(0, 120)
+
+      const buffer = Buffer.from(chunk)
+      //const buffer = new Buffer('abcd')
+      console.log(buffer)
+      ipfs.add(buffer, (err, res) => {
+        if (err) {
+          console.log(err)
+        }
+        console.log(res)
+        var ts = new Buffer(bs58.decode(res[0].hash)).toString('hex')
+        ts = ts.slice(4, ts.length)
+        console.log(ts)
+        var verify = web3.eth.contract(abi)
+        var verifyInst = verify.at('0x992fceda0583aae113d83a9e3a7a8c6fc4328598')
+        console.log('0x' + buffer.toString('hex'))
+        console.log(abiFile)
+        //verifyInst.verifyHash('0x' + buffer.toString('hex'), {from: web3.eth.accounts[0], gas: 3000000})
+      })
+    }))
+
+    // const buffer = Buffer.from(file.result)
+    // console.log(buffer)
+    // // ipfs.add(buffer, (err, res) => {
+    // //   if (err) console.log(err)
+    // //   alert(res[0].hash)
+    // // })
   })
 }
 

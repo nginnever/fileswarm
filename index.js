@@ -1,7 +1,7 @@
 'use strict'
-
-const electron = require('electron')
-const app = electron.app
+//const electron = require('electron')
+const app = require('electron').remote
+var dialog = app.dialog
 const BrowserWindow = electron.BrowserWindow
 const menu = require('./menu')
 
@@ -13,22 +13,26 @@ function createWindow() {
       icon:'assets/image.png', 
       width: 900, 
       height: 600,
-      title: 'Fileswarm'
+      title: 'Fileswarm',
+      webPreferences: {
+        nodeIntegration: true
+      }
     }
   )
-console.log(window.IpfsApi('localhost', '5001'))
+
   menu.createMenu()
 
   mainWindow.loadURL('file://' + __dirname + '/app/dist/index.html')
+  
+  mainWindow.webContents.openDevTools()
 
   mainWindow.setTitle('fileswarm')
-
-  //mainWindow.webContents.openDevTools()
 
   mainWindow.on('closed', () => {
     mainWindow = null
   })
 }
+
 
 app.on('ready', createWindow)
 

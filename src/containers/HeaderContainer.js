@@ -82,6 +82,7 @@ export const HeaderContainer = React.createClass({
     console.log('setting account to: ' + refs.value)
     var _this = this
     api.setAccount(refs.value)
+    api.getBalance(refs.value)
     _this.setState({
       isOpenAccounts: false
     })

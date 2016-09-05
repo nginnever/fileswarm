@@ -43,13 +43,14 @@ export const FilesContainer = React.createClass({
   //   _this.renderAccounts()
   },
   getFile: function(file) {
-    console.log(file)
+    //console.log(file)
     const f = file.files[0]
-    let reader = new FileReader()
-    reader.onloadend = () => {
-      api.getFile(reader)
-    }
-    reader.readAsArrayBuffer(f)
+    api.getFile(f)
+    // let reader = new FileReader()
+    // reader.onloadend = () => {
+    //   api.getFile(reader)
+    // }
+    // reader.readAsArrayBuffer(f)
   },
 	render: function() {
 		return (
