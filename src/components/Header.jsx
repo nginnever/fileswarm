@@ -29,7 +29,7 @@ export const Header = React.createClass({
 
 			    <button className="btn btn-default">
 			      <span className="icon icon-network icon-text" style={{color: '#20BE6F'}}></span>
-			      1337 Files Online
+			      {this.props.online} Files Online
 			    </button>
 			    <button className="btn btn-default pull-right" onClick={this.props.openAccounts}>
 			      <span className="icon icon-user pull-right"></span>

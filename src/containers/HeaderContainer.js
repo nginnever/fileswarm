@@ -23,7 +23,8 @@ export const HeaderContainer = React.createClass({
   		accounts: currentStore.accountReducer.toJSON().accounts,
   		isOpenAccounts: false,
   		customModalStyles: customStyles,
-      options: []
+      options: [],
+      online: 0
   	}
   },
 	componentWillMount: function() {
@@ -34,13 +35,15 @@ export const HeaderContainer = React.createClass({
 			currentStore = store.getState()
 			_this.setState({
 				balance: currentStore.accountReducer.toJSON().balance,
-				activeAccount: currentStore.accountReducer.toJSON().activeAccount
+				activeAccount: currentStore.accountReducer.toJSON().activeAccount,
+        online: currentStore.filesReducer.toJSON().online
 			})
       console.log('rerendering accounts drop down')
       _this.renderAccounts()
 		})
     console.log('rendering accounts 1st time')
     _this.renderAccounts()
+    _this.selectAcc({value: 0})
 	},
   renderAccounts: function() {
     var _this = this
@@ -98,7 +101,8 @@ export const HeaderContainer = React.createClass({
         isOpenAccounts={this.state.isOpenAccounts}
         customModalStyles={this.state.customModalStyles}
         selectAcc={this.selectAcc}
-        options={this.state.options} />
+        options={this.state.options} 
+        online = {this.state.online} />
 		)
 	}
 })

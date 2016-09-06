@@ -3,56 +3,22 @@ import {store} from '../store'
 import bs58 from 'bs58'
 import IPFS from 'ipfs-api'
 
+const chunker = require('block-stream2')
+const through2 = require('through2')
 const Buffer = require('buffer/').Buffer
 const fileReaderStream = require('filereader-stream')
 const concat = require('concat-stream')
 const ipfs = window.IpfsApi('localhost', '5001')
 const abiFile = require('../utils/abi.js').file
 const abiManager = require('../utils/abi.js').manager
-const managerAddy = '0xa2f8d596983de088edef164d2163ae1f0d29e495'
+const managerAddy = '0x31cd8c442a7c5ce6dc13781a0b818779e2dd5139'
+const CHUNK_SIZE = 262144
 // import lightwallet from 'eth-lightwallet'
 // import web3hook from 'hooked-web3-provider'
 
 let web3
 //let ipfs
 // import {createDaemon} from '../utils/ipfs'
-
-export const search = (term) => {
-  return new Promise((resolve, reject) => {
-    const registryContract = web3.eth.contract(abi)
-    // const regInstance = registryContract.at('0xb5f546d5bc8ab6ce0a4091c8bf906800627912cd')
-    // server test net
-    const regInstance = registryContract.at('0x7b7ac61b0c77fbde14b61eb31494abd05f4fd0ae')
-    const listNode = regInstance.registry(term)
-    resolve(listNode)
-  })
-
-}
-
-export const iterate = () => {
-  return new Promise((resolve, reject) => {
-    const registryContract = web3.eth.contract(abi)
-    // const regInstance = registryContract.at('0xb5f546d5bc8ab6ce0a4091c8bf906800627912cd')
-    // server test net
-    const regInstance = registryContract.at('0x7b7ac61b0c77fbde14b61eb31494abd05f4fd0ae')    
-    const size = regInstance.size().c[0]
-    console.log(size)
-    var head = 'test'
-    var next
-    var list = []
-    for (var i = 0; i < size; i++) {
-      const element = regInstance.registry(head)
-      console.log(i)
-      if (i != 0) {
-        list.push({name: next, hash:element[2]+element[3]})
-      }
-      next = hex_to_ascii(element[1].slice(2,element[0].length))
-      head = element[1]
-    }
-    resolve(list)
-  })
-
-}
 
 // Internal functions
 function hex_to_ascii(str1) {
@@ -70,8 +36,8 @@ function setWeb3() {
   } else {
     // set the provider you want from Web3.providers
     // local server
-    //web3 = new Web3(new Web3.providers.HttpProvider("http://192.168.0.28:8545"))
-    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
+    web3 = new Web3(new Web3.providers.HttpProvider("http://192.168.0.28:8545"))
+    //web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
     // demo server
     // web3 = new Web3(new Web3.providers.HttpProvider("http://149.56.133.176:8545"))
   }
@@ -98,6 +64,95 @@ function ipfsOn () {
     // })
   resolve('test')
   })
+}
+
+function getInitFiles () {
+  return new Promise((resolve, reject) => {
+    const _manager = getManagerContract()
+    const fileshash = _manager.userFiles(web3.eth.accounts[0])
+    console.log('database files hash: ')
+    console.log(fileshash)
+    if (fileshash === '0x0') {
+      var user = [
+        {
+          files: [
+            {
+              hash: 'test-file',
+              name: 'test.jpg',
+              size: 20309209
+            }
+          ]
+        }
+      ]
+      store.dispatch({
+        type: 'GET_FILES',
+        files: { user: user }
+      })
+    }
+    
+    // TODO: Get this from ipfs
+    var user = [
+      {
+        files: [
+          {
+            hash: 'test-file',
+            name: 'test.jpg',
+            size: 20309209
+          }
+        ]
+      },
+      {
+        files: [
+          {
+            hash: 'test-file1',
+            name: 'test.jpg',
+            size: 20309209
+          }
+        ]
+      },
+      {
+        files: [
+          {
+            hash: 'test-file2',
+            name: 'test.jpg',
+            size: 20309209
+          }
+        ]
+      }
+    ]
+
+    var manager = getManagerContract()
+    var fonline = manager.filecount().c[0]
+
+    console.log('files online')
+    console.log(fonline)
+
+    store.dispatch({
+      type: 'GET_FILES',
+      user: { user: user }
+    })
+
+    store.dispatch({
+      type: 'GET_ONLINE',
+      online: { online: fonline }
+    })
+    //ipfs.get
+    resolve()
+  })
+}
+
+function getManagerContract () {
+  var manager = web3.eth.contract(abiManager)
+  var managerInst = manager.at(managerAddy)
+
+  return managerInst
+}
+
+function getFileContract (addy) {
+  var file = web3.eth.contract(abiFile)
+  var fileInst = file.at(addy)
+
+  return fileInst
 }
 
 // ACCOUNT API
@@ -166,17 +221,20 @@ export const init = () => {
       getAccounts().then((res) => {
         console.log('getting balance from store')
         getBalance(0).then(() => {
-          var hexenc = '1220bb72da8347160f5b6e001345e90d7213bd166aad262e419c98fb87b5484ef578'
-          var testhash = bs58.encode(new Buffer(hexenc, 'hex'))
-          console.log(testhash)
-          console.log(new Buffer(hexenc, 'hex'))
-          //console.log(bs58.decode(testhash, 'utf8'))
-          console.log(new Buffer(bs58.decode(testhash)))
-          ipfsOn().then((id) => {
-            console.log('test')
-            console.log(id)
+          getInitFiles().then(() => {
             resolve()
           })
+          //var hexenc = '1220bb72da8347160f5b6e001345e90d7213bd166aad262e419c98fb87b5484ef578'
+          //var testhash = bs58.encode(new Buffer(hexenc, 'hex'))
+          //console.log(testhash)
+          //console.log(new Buffer(hexenc, 'hex'))
+          //console.log(bs58.decode(testhash, 'utf8'))
+          //console.log(new Buffer(bs58.decode(testhash)))
+          //ipfsOn().then((id) => {
+          //  console.log('test')
+          //  console.log(id)
+          //  resolve()
+          //})
         })
       })
     })
@@ -205,38 +263,126 @@ export const getDiskspace = (input) => {
 }
 
 // FILES API
-export const getFile = (file) => {
+export const upload = (hash, value, account, name, size) => {
   return new Promise((resolve, reject) => {
-    fileReaderStream(file).pipe(concat((contents) => {
-      console.log('test')
-      console.log(contents)
-      var chunk = contents.slice(0, 120)
+    if (account === undefined) { account = 0 }
 
-      const buffer = Buffer.from(chunk)
-      //const buffer = new Buffer('abcd')
-      console.log(buffer)
-      ipfs.add(buffer, (err, res) => {
+    var fObject = {
+      files: []
+    }
+
+    var ts = new Buffer(bs58.decode(hash)).toString('hex')
+    ts = ts.slice(4, ts.length)
+    console.log(ts)
+    var managerInst = getManagerContract()
+    managerInst.createFile(ts, {from: web3.eth.accounts[account], value: web3.toWei(value), gas:3000000}, (err, res) => {
+      console.log(res)
+      console.log(err)
+      console.log(managerInst.files(managerInst.filecount() - 1))
+    })
+
+    // wait for tx to be mined
+    // TODO: use solidity events
+    setTimeout(wait, 15000)
+
+    function wait() {
+      var _currentStore = store.getState()
+      var user = _currentStore.filesReducer.toJSON().user
+      
+      user[account].files.push({
+        hash: hash,
+        name: name,
+        size: size
+      })
+
+      // save files array to ipfs and save hash in manager contract
+      ipfs.add(new Buffer(user), (err, res) => {
         if (err) {
           console.log(err)
         }
+        console.log('----IPFS add user files res----')
         console.log(res)
-        var ts = new Buffer(bs58.decode(res[0].hash)).toString('hex')
-        ts = ts.slice(4, ts.length)
-        console.log(ts)
-        var verify = web3.eth.contract(abi)
-        var verifyInst = verify.at('0x992fceda0583aae113d83a9e3a7a8c6fc4328598')
-        console.log('0x' + buffer.toString('hex'))
-        console.log(abiFile)
-        //verifyInst.verifyHash('0x' + buffer.toString('hex'), {from: web3.eth.accounts[0], gas: 3000000})
-      })
-    }))
 
-    // const buffer = Buffer.from(file.result)
-    // console.log(buffer)
-    // // ipfs.add(buffer, (err, res) => {
-    // //   if (err) console.log(err)
-    // //   alert(res[0].hash)
-    // // })
+        // find dag links and create the chunks in file contract
+        
+
+        console.log('new file contract addy')
+        console.log(managerInst.files(managerInst.filecount - 1))
+
+        var fileInst = getFileContract(managerInst.files(managerInst.filecount - 1))
+        console.log('new file balance')
+        console.log(fileInst.balance())
+        console.log('new account balance')
+        const newb = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[_currentStore.accountReducer.toJSON().activeAccount]))
+        
+        // save file object to ipfs and register in contract
+        store.dispatch({
+          type: 'GET_FILES',
+          user: { user: user }
+        })
+
+        // dispatch the new balance
+        store.dispatch({
+          type: 'GET_BALANCE',
+          balance: {balance: newb.c}
+        })
+
+        console.log(managerInst.userFiles(web3.eth.accounts[account]))
+      })
+    }
+
   })
 }
 
+export const getFile = (file) => {
+  return new Promise((resolve, reject) => {
+    ipfs.add(fileReaderStream(file), (err, res) => {
+      if (err) {
+        console.log(err)
+      } else {
+        resolve(res[0].hash)
+      }
+    })
+    /*fileReaderStream(file)
+      .pipe(fsc(CHUNK_SIZE))
+      .pipe(through2((_chunk, enc, cb) => {
+        console.log('test')
+        console.log(_chunk)
+        var chunk = _chunk.slice(0, 999)
+
+        //const buffer = Buffer.from(chunk)
+        //const buffer = contents.toArrayBuffer()
+        //const test = Array.apply(null, Array(20000)).map(Number.prototype.valueOf,0)
+        //console.log(test)
+
+        ipfs.add(chunk, (err, res) => {
+          if (err) {
+            console.log(err)
+          }
+          console.log(res)
+          var ts = new Buffer(bs58.decode(res[0].hash)).toString('hex')
+          ts = ts.slice(4, ts.length)
+          console.log(ts)
+          //var verify = web3.eth.contract(abi)
+          //var verifyInst = verify.at('0x992fceda0583aae113d83a9e3a7a8c6fc4328598')
+          console.log('0x' + buffer.toString('hex'))
+          console.log(abiFile)
+          resolve(res[0].hash)
+          //verifyInst.verifyHash('0x' + buffer.toString('hex'), {from: web3.eth.accounts[0], gas: 3000000})
+        })
+        //cb()
+      }))*/
+  })
+}
+
+
+function fsc (size) {
+  return chunker({ size: size, zeroPadding: false })
+}
+
+    function test (stream) {
+      console.log(stream)
+      return new Promise((resolve, reject) => {
+        resolve('test2323')
+      })
+    }

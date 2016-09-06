@@ -45,4 +45,4 @@ function testLoader() {
 	})
 }
 
-setTimeout(testLoader, 1000)
+setTimeout(testLoader, 3000)
