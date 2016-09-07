@@ -1,8 +1,6 @@
 'use strict'
 //const electron = require('electron')
 const app = require('electron').remote
-var dialog = app.dialog
-const BrowserWindow = electron.BrowserWindow
 const menu = require('./menu')
 
 let mainWindow

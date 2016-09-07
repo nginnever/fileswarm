@@ -11,12 +11,13 @@ export const FilesContainer = React.createClass({
     var currentStore = store.getState()
     var files = []
     let rand
+    //var h = currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].hash
     //console.log(currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files.length)
     for(var i = 0; i < currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files.length; i++) {
     	rand = Math.floor(Math.random()*100000000000000000)
     	files.push(
 		    <tr key={rand}>
-		      <td style={{width: 500}}>{currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].hash}</td>
+		      <td style={{width: 200}}><a href={'http://ipfs.io/ipfs/' + currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].hash}>{currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].hash}</a></td>
 		      <td style={{width: 80}}>{currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].name}</td>
 		      <td style={{width: 80}}>{currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].size}</td>
 		      <td style={{width: 80}}>14</td>
@@ -47,13 +48,13 @@ export const FilesContainer = React.createClass({
 
       var files = []
       let rand
-
+      //var h = currentStore.filesReducer.toJSON().user[acc].files[i].hash
 
       for(var i = 0; i < currentStore.filesReducer.toJSON().user[acc].files.length; i++) {
         rand = Math.floor(Math.random()*100000000000000000)
         files.push(
           <tr key={rand}>
-            <td style={{width: 500}}>{currentStore.filesReducer.toJSON().user[acc].files[i].hash}</td>
+            <td style={{width: 200}}><a href={'http://ipfs.io/ipfs/' + currentStore.filesReducer.toJSON().user[acc].files[i].hash}>{currentStore.filesReducer.toJSON().user[acc].files[i].hash.slice(0, 10) + '...'}</a></td>
             <td style={{width: 80}}>{currentStore.filesReducer.toJSON().user[acc].files[i].name}</td>
             <td style={{width: 80}}>{currentStore.filesReducer.toJSON().user[acc].files[i].size}</td>
             <td style={{width: 80}}>14</td>

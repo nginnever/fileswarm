@@ -95,7 +95,7 @@ function getInitFiles () {
       {
         files: [
           {
-            hash: 'test-file',
+            hash: 'QmTw6BFqgED...',
             name: 'test.jpg',
             size: 20309209
           }
@@ -104,8 +104,8 @@ function getInitFiles () {
       {
         files: [
           {
-            hash: 'test-file1',
-            name: 'test.jpg',
+            hash: 'QmTw6BFqgED..',
+            name: 'test1.jpg',
             size: 20309209
           }
         ]
@@ -113,8 +113,8 @@ function getInitFiles () {
       {
         files: [
           {
-            hash: 'test-file2',
-            name: 'test.jpg',
+            hash: 'QmTw6BFqgED..',
+            name: 'test2.jpg',
             size: 20309209
           }
         ]
@@ -296,6 +296,7 @@ export const upload = (hash, value, account, name, size) => {
       })
 
       // save files array to ipfs and save hash in manager contract
+
       ipfs.add(new Buffer(user), (err, res) => {
         if (err) {
           console.log(err)
@@ -316,6 +317,9 @@ export const upload = (hash, value, account, name, size) => {
         const newb = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[_currentStore.accountReducer.toJSON().activeAccount]))
         
         // save file object to ipfs and register in contract
+        _files = _currentStore.filesReducer.user[_currentStore.accountReducer.toJSON().activeAccount]
+        console.log('files object from store')
+        console.log(_files)
         store.dispatch({
           type: 'GET_FILES',
           user: { user: user }
