@@ -7,7 +7,7 @@
     "start": "./node_modules/.bin/electron .",
     "dev": "./node_modules/.bin/webpack-dev-server --content-base dist --inline --hot",
     "electron-rebuild": "./node_modules/.bin/electron-rebuild",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/.bin/mocha",
     "build-osx": "node electron-build-osx.js"
   },
   "repository": {
