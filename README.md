@@ -8,6 +8,11 @@ A distributed file storage platform built with <a href="ipfs.io">IPFS</a> and <a
 
 - [Project Status](#project-status)
 - [How It Works](#how-it-works)
+  - [Uploading](#uploading)
+  - [Downloading](#downloading)
+  - [Seeding](#seeding)
+  - [Challenges](#challenges)
+  - [Payments](#payments)
   - [Costs](#costs)
 - [Install](#install)
   - [Dev Server](#dev-server)
