@@ -24,7 +24,7 @@ A distributed file storage platform built with <a href="ipfs.io">IPFS</a> and <a
   - [Seed](#seed)
 - [Data Model](#data-model)
 - [Contribute](#contribute)
-- [Road Map](#road-map)
+- [Roadmap](#roadmap)
 - [License](#license)
 
 
@@ -32,7 +32,7 @@ A distributed file storage platform built with <a href="ipfs.io">IPFS</a> and <a
 
 **Status:** *In active development*
 
-Check the project's [roadmap](https://github.com/haadcode/orbit/blob/master/ROADMAP.md) to see what's happening at the moment and what's planned next.
+Check the project's [roadmap](https://github.com/nginnever/fileswarm/blob/master/ROADMAP.md) to see what's happening at the moment and what's planned next.
 
 [![Project Status](https://badge.waffle.io/nginnever/fileswarm.svg?label=In%20Progress&title=In%20Progress)](https://waffle.io/nginnever/fileswarm)
 [![CircleCI Status](https://circleci.com/gh/nginnever/fileswarm.svg?style=shield&circle-token=158cdbe02f9dc4ca4cf84d8f54a8b17b4ed881a1)](https://circleci.com/gh/nginnever/fileswarm)
