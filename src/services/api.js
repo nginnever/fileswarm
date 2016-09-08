@@ -286,8 +286,8 @@ export const upload = (hash, value, account, name, size) => {
     setTimeout(wait, 15000)
 
     function wait() {
-      var _currentStore = store.getState()
-      var user = _currentStore.filesReducer.toJSON().user
+      var currentStore = store.getState()
+      var user = currentStore.filesReducer.toJSON().user
       
       user[account].files.push({
         hash: hash,
@@ -314,10 +314,11 @@ export const upload = (hash, value, account, name, size) => {
         console.log('new file balance')
         console.log(fileInst.balance())
         console.log('new account balance')
-        const newb = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[_currentStore.accountReducer.toJSON().activeAccount]))
+        const newb = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount]))
         
         // save file object to ipfs and register in contract
-        _files = _currentStore.filesReducer.user[_currentStore.accountReducer.toJSON().activeAccount]
+        //console.log(currentStore.filesReducer)
+        var _files = currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount]
         console.log('files object from store')
         console.log(_files)
         store.dispatch({
@@ -340,6 +341,8 @@ export const upload = (hash, value, account, name, size) => {
 
 export const getFile = (file) => {
   return new Promise((resolve, reject) => {
+    console.log('GET FILE CALL!!!!!')
+    console.log(file)
     ipfs.add(fileReaderStream(file), (err, res) => {
       if (err) {
         console.log(err)
@@ -347,6 +350,16 @@ export const getFile = (file) => {
         resolve(res[0].hash)
       }
     })
+
+    // this requires go-ipfs fix target not set
+    // ipfs.add(contents, (err, res) => {
+    //   if (err) {
+    //     console.log(err)
+    //   } else {
+    //     resolve(res[0].hash)
+    //   }
+    // })
+
     /*fileReaderStream(file)
       .pipe(fsc(CHUNK_SIZE))
       .pipe(through2((_chunk, enc, cb) => {
