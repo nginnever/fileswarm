@@ -66,15 +66,15 @@ table-wrapper {
 
 .table-scroll-files {
   position:absolute;
-  height: 515px;
-  
+  height: 375px;
+  width: 100%;
   overflow:scroll; 
   bottom: 0; 
 }
 
 .table-scroll-header {
   position:absolute;
-  
-  bottom: 515px;
+  width: 100%;
+  bottom: 375px;
   overflow:scroll; 
 }

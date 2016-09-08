@@ -13,13 +13,13 @@ export const FilesContainer = React.createClass({
     let rand
     //var h = currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].hash
     //console.log(currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files.length)
-    for(var i = 0; i < currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files.length; i++) {
+    for(var i = 0; i < 60; i++) {
     	rand = Math.floor(Math.random()*100000000000000000)
     	files.push(
 		    <tr key={rand}>
-		      <td style={{width: 200}}><a href={'http://ipfs.io/ipfs/' + currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].hash}>{currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].hash}</a></td>
-		      <td style={{width: 80}}>{currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].name}</td>
-		      <td style={{width: 80}}>{currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].size}</td>
+		      <td style={{width: 200}}>test</td>
+		      <td style={{width: 80}}>test</td>
+		      <td style={{width: 80}}>test</td>
 		      <td style={{width: 80}}>14</td>
 		      <td style={{width: 150}}>Ξ 0.3230332323203</td>
 		      <td style={{width: 80}}>100%</td>
