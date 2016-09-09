@@ -63,6 +63,7 @@
     "react-modal": "^1.4.0",
     "react-redux": "^4.4.5",
     "react-router": "^2.6.1",
+    "readable-stream": "1.1.13",
     "redux": "^3.5.2",
     "redux-thunk": "^2.1.0",
     "remote": "^0.2.6",

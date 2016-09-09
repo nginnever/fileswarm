@@ -79,6 +79,8 @@ export const FilesContainer = React.createClass({
     console.log('IPFS API CAL -----')
     console.log(f)
     api.getFile(f).then((hash) => {
+      console.log(hash)
+      console.log(file)
       this.setState({
         hash: hash,
         file: file

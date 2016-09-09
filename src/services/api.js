@@ -4,6 +4,7 @@ import bs58 from 'bs58'
 import IPFS from 'ipfs-api'
 
 const chunker = require('block-stream2')
+const Readable = require('readable-stream')
 const through2 = require('through2')
 const Buffer = require('buffer/').Buffer
 const fileReaderStream = require('filereader-stream')
@@ -11,7 +12,7 @@ const concat = require('concat-stream')
 const ipfs = window.IpfsApi('localhost', '5001')
 const abiFile = require('../utils/abi.js').file
 const abiManager = require('../utils/abi.js').manager
-const managerAddy = '0x31cd8c442a7c5ce6dc13781a0b818779e2dd5139'
+const managerAddy = '0x3b08379d564b8d5d4dc72e9151bdff7bd4c5d12b'
 const CHUNK_SIZE = 262144
 // import lightwallet from 'eth-lightwallet'
 // import web3hook from 'hooked-web3-provider'
@@ -267,73 +268,138 @@ export const upload = (hash, value, account, name, size) => {
   return new Promise((resolve, reject) => {
     if (account === undefined) { account = 0 }
 
-    var fObject = {
-      files: []
-    }
-
-    var ts = new Buffer(bs58.decode(hash)).toString('hex')
-    ts = ts.slice(4, ts.length)
-    console.log(ts)
+    var currentStore = store.getState()
+    var user = currentStore.filesReducer.toJSON().user
     var managerInst = getManagerContract()
-    managerInst.createFile(ts, {from: web3.eth.accounts[account], value: web3.toWei(value), gas:3000000}, (err, res) => {
-      console.log(res)
-      console.log(err)
-      console.log(managerInst.files(managerInst.filecount() - 1))
+
+    // save file object to ipfs and register in contract
+    user[account].files.push({
+      hash: hash,
+      name: name,
+      size: size
     })
 
+
+    ipfs.add(new Buffer(JSON.stringify(user)), (err, res) => {
+      if (err) {
+        console.log(err)
+      }
+      console.log('----IPFS add user files res----')
+      console.log(res)
+      var _files = currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount]
+      console.log('files object from store')
+      console.log(_files)
+
+      // set the new users object hash in the manager contract
+      var ts = new Buffer(bs58.decode(res[0].hash)).toString('hex')
+      ts = ts.slice(4, ts.length)
+      console.log(ts)
+
+      managerInst.createFile(ts, {from: web3.eth.accounts[account], value: web3.toWei(value), gas:3000000}, (err, res) => {
+        console.log(res)
+        console.log(err)
+        console.log(managerInst.files(managerInst.filecount() - 1))
+      })
+    })
     // wait for tx to be mined
     // TODO: use solidity events
     setTimeout(wait, 15000)
 
     function wait() {
-      var currentStore = store.getState()
-      var user = currentStore.filesReducer.toJSON().user
-      
-      user[account].files.push({
-        hash: hash,
-        name: name,
-        size: size
-      })
+      // find dag links and create the chunks in file contract
 
-      // save files array to ipfs and save hash in manager contract
+      // TODO: listen to solidity events instead of wait()
 
-      ipfs.add(new Buffer(user), (err, res) => {
+      // get the balance of the file contract
+      // BUG: file not getting set with msg.value
+      console.log('new file contract addy')
+      console.log(managerInst.files(managerInst.filecount - 1))
+
+      var fileInst = getFileContract(managerInst.userFiles(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount]).lastFile)
+      console.log('new file balance')
+      console.log('-------')
+      console.log(fileInst)
+      console.log(fileInst.balance())
+
+      ipfs.object.get(hash, (err, res) => {
+        console.log('OBJECT GET RETURN')
         if (err) {
           console.log(err)
         }
-        console.log('----IPFS add user files res----')
         console.log(res)
+        if (res.links.length === 0) {
 
-        // find dag links and create the chunks in file contract
+          ipfs.get(hash, (err, res) => {
+            if (err) {
+              console.log(err)
+            }
+            res.pipe(concat((_files) => {
+              _files[0].content.pipe(concat((_content) => {
+                console.log('returned data from object get with no links')
+                console.log(_content.length)
+
+                // we need to take 100 bytes from the full chunk
+                // for the hash to be stored in the contract 
+                // since contracts can only verify 120 bytes atm
+                var smallChunk =  _content.slice(0, 100)
+                console.log(smallChunk)
+
+                // input format for verifying chunk
+                // this is for seeding as well
+                var smallChunkStr = '0x' + smallChunk.join('')
+                console.log(smallChunk.length)
+
+                //protobuf encode the smaller chunk
+                ipfs.add(smallChunk, (err, res) => {
+                  if (err) {
+                    console.log(err)
+                  }
+                  console.log('IPFS hash of contract sized chunk')
+                  console.log(res)
+                })
+              }))
+            }))
+            
+            console.log(res)
+          })
+        }
         
+        // for now we assume all objects will be files
+        // and each file will contain one level of chunks
+        // see possible hash problems with larger files
+        for (var i = 0; i < res.links.length; i++) {
 
-        console.log('new file contract addy')
-        console.log(managerInst.files(managerInst.filecount - 1))
-
-        var fileInst = getFileContract(managerInst.files(managerInst.filecount - 1))
-        console.log('new file balance')
-        console.log(fileInst.balance())
-        console.log('new account balance')
-        const newb = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount]))
-        
-        // save file object to ipfs and register in contract
-        //console.log(currentStore.filesReducer)
-        var _files = currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount]
-        console.log('files object from store')
-        console.log(_files)
-        store.dispatch({
-          type: 'GET_FILES',
-          user: { user: user }
-        })
-
-        // dispatch the new balance
-        store.dispatch({
-          type: 'GET_BALANCE',
-          balance: {balance: newb.c}
-        })
-
-        console.log(managerInst.userFiles(web3.eth.accounts[account]))
+        }
       })
+      console.log('new account balance')
+      const newb = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount]))
+      
+
+
+      // dispatch the new balance
+      store.dispatch({
+        type: 'GET_BALANCE',
+        balance: {balance: newb.c}
+      })
+      
+      store.dispatch({
+        type: 'GET_FILES',
+        user: { user: user }
+      })
+
+      // USE THIS FOR SETTING FILES REDUCER IN INIT
+      // ipfs.get(res[0].hash, (err, res) => {
+      //   res.pipe(concat((_files) => {
+      //     _files[0].content.pipe(concat((_users) => {
+      //       console.log(JSON.parse(_users.toString()))
+      //     }))
+      //   }))
+      //   console.log(err)
+      //   console.log(res)
+      // })
+
+
+      // console.log(managerInst.userFiles(web3.eth.accounts[account]))
     }
 
   })
@@ -341,15 +407,13 @@ export const upload = (hash, value, account, name, size) => {
 
 export const getFile = (file) => {
   return new Promise((resolve, reject) => {
-    console.log('GET FILE CALL!!!!!')
-    console.log(file)
-    ipfs.add(fileReaderStream(file), (err, res) => {
-      if (err) {
-        console.log(err)
-      } else {
-        resolve(res[0].hash)
-      }
-    })
+    // ipfs.add(fileReaderStream(file), (err, res) => {
+    //   if (err) {
+    //     console.log(err)
+    //   } else {
+    //     resolve(res[0].hash)
+    //   }
+    // })
 
     // this requires go-ipfs fix target not set
     // ipfs.add(contents, (err, res) => {
@@ -389,6 +453,27 @@ export const getFile = (file) => {
         })
         //cb()
       }))*/
+
+
+    ipfs.createAddStream((err, stream) => {
+      console.log(stream)
+
+      stream.on('data', (f) => {
+        console.log(f)
+        resolve(f.hash)
+      })
+
+      stream.on('end', () => {
+        console.log('done adding ipfs file')
+        //resolve(file.hash)
+      })
+      
+      stream.write({path: file.name, content: fileReaderStream(file)})
+      stream.end()
+
+      // target set is not a function error from piping
+      //fileReaderStream(file).pipe(stream)
+    })
   })
 }
 
