@@ -12,7 +12,7 @@ const concat = require('concat-stream')
 const ipfs = window.IpfsApi('localhost', '5001')
 const abiFile = require('../utils/abi.js').file
 const abiManager = require('../utils/abi.js').manager
-const managerAddy = '0x3b08379d564b8d5d4dc72e9151bdff7bd4c5d12b'
+const managerAddy = '0x576502fca073b031ec2e45b9c40d600212058a72'
 const CHUNK_SIZE = 262144
 // import lightwallet from 'eth-lightwallet'
 // import web3hook from 'hooked-web3-provider'
@@ -37,7 +37,7 @@ function setWeb3() {
   } else {
     // set the provider you want from Web3.providers
     // local server
-    web3 = new Web3(new Web3.providers.HttpProvider("http://192.168.0.28:8545"))
+    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
     //web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
     // demo server
     // web3 = new Web3(new Web3.providers.HttpProvider("http://149.56.133.176:8545"))
@@ -292,7 +292,9 @@ export const upload = (hash, value, account, name, size) => {
 
       // set the new users object hash in the manager contract
       var ts = new Buffer(bs58.decode(res[0].hash)).toString('hex')
+      console.log(ts)
       ts = ts.slice(4, ts.length)
+      ts = '0x'+ts
       console.log(ts)
 
       managerInst.createFile(ts, {from: web3.eth.accounts[account], value: web3.toWei(value), gas:3000000}, (err, res) => {
@@ -311,22 +313,36 @@ export const upload = (hash, value, account, name, size) => {
       // TODO: listen to solidity events instead of wait()
 
       // get the balance of the file contract
-      // BUG: file not getting set with msg.value
       console.log('new file contract addy')
-      console.log(managerInst.files(managerInst.filecount - 1))
+      console.log(managerInst.files(managerInst.filecount() - 1))
+      console.log('userFiles')
 
-      var fileInst = getFileContract(managerInst.userFiles(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount]).lastFile)
-      console.log('new file balance')
+      // DEBUG: getLatest is not a function
+      //managerInst.getLatest({from: web3.eth.accounts[account], gas:3000000}, (err, res) => {
+      //  if (err) {
+      //    console.log(err)
+      //  }
+      //})
+
+      // This only works under the assumption that another tx hasnt set a file after
+      var fileInst = getFileContract(managerInst.files(managerInst.filecount() - 1))
+
+      console.log('new file info')
       console.log('-------')
       console.log(fileInst)
       console.log(fileInst.balance())
 
+      // DEBUG: fileHash is not a function, yet works in geth console
+      //console.log(fileInst.fileHash())
+
+      //var fileInst = getFileContract(managerInst.userFiles(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount]).lastFile)
+      
+      // Set chunks
       ipfs.object.get(hash, (err, res) => {
         console.log('OBJECT GET RETURN')
         if (err) {
           console.log(err)
         }
-        console.log(res)
         if (res.links.length === 0) {
 
           ipfs.get(hash, (err, res) => {
@@ -341,21 +357,52 @@ export const upload = (hash, value, account, name, size) => {
                 // we need to take 100 bytes from the full chunk
                 // for the hash to be stored in the contract 
                 // since contracts can only verify 120 bytes atm
-                var smallChunk =  _content.slice(0, 100)
-                console.log(smallChunk)
+                var smallChunk =  _content.toString('hex')
+                smallChunk = smallChunk.slice(0, 100)
 
                 // input format for verifying chunk
                 // this is for seeding as well
-                var smallChunkStr = '0x' + smallChunk.join('')
+                // var smallChunkStr = '0x' + smallChunk.join('')
                 console.log(smallChunk.length)
 
                 //protobuf encode the smaller chunk
-                ipfs.add(smallChunk, (err, res) => {
+                ipfs.add(new Buffer(smallChunk, 'hex'), (err, res) => {
                   if (err) {
                     console.log(err)
                   }
                   console.log('IPFS hash of contract sized chunk')
                   console.log(res)
+                  var dh = new Buffer(bs58.decode(res[0].hash)).toString('hex')
+                  console.log(dh)
+                  dh = '0x' + dh.slice(4, dh.length)
+                  console.log(dh)
+
+                  fileInst.addChunk(dh, {from: web3.eth.accounts[account], gas: 3000000}, (err, res) => {
+                    if (err) console.log(err)
+
+                    setTimeout(wait2, 15000)
+
+                    function wait2() {
+                      console.log(fileInst.chunks(0))
+                      // update UI state when finished
+                      console.log('new account balance')
+                      const newb = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount]))
+                      
+
+
+                      // dispatch the new balance
+                      store.dispatch({
+                        type: 'GET_BALANCE',
+                        balance: {balance: newb.c}
+                      })
+                      
+                      store.dispatch({
+                        type: 'GET_FILES',
+                        user: { user: user }
+                      })
+                    }
+
+                  })
                 })
               }))
             }))
@@ -371,21 +418,7 @@ export const upload = (hash, value, account, name, size) => {
 
         }
       })
-      console.log('new account balance')
-      const newb = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount]))
-      
 
-
-      // dispatch the new balance
-      store.dispatch({
-        type: 'GET_BALANCE',
-        balance: {balance: newb.c}
-      })
-      
-      store.dispatch({
-        type: 'GET_FILES',
-        user: { user: user }
-      })
 
       // USE THIS FOR SETTING FILES REDUCER IN INIT
       // ipfs.get(res[0].hash, (err, res) => {
