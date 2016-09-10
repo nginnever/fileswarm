@@ -70,9 +70,41 @@ function ipfsOn () {
 function getInitFiles () {
   return new Promise((resolve, reject) => {
     const _manager = getManagerContract()
-    const fileshash = _manager.userFiles(web3.eth.accounts[0])
+    var fileshash = _manager.userFiles(web3.eth.accounts[0])
     console.log('database files hash: ')
+
+    // TODO: find a better way tp access struct values in web3
     console.log(fileshash)
+    var fh = '1220' + fileshash.slice(2, fileshash.length)
+
+    ipfs.get(new Buffer(fh, 'hex'), (err, res) => {
+      res.pipe(concat((_files) => {
+        _files[0].content.pipe(concat((_users) => {
+          console.log('USER OBJECT from db returned')
+          var userArr = JSON.parse(_users.toString())
+
+          var manager = getManagerContract()
+          var fonline = manager.filecount().c[0]
+
+          console.log('files online')
+          console.log(fonline)
+
+          store.dispatch({
+            type: 'GET_FILES',
+            user: { user: userArr }
+          })
+
+          store.dispatch({
+            type: 'GET_ONLINE',
+            online: { online: fonline }
+          })
+          //ipfs.get
+          resolve()
+
+        }))
+      }))
+    })
+
     if (fileshash === '0x0') {
       var user = [
         {
@@ -80,7 +112,8 @@ function getInitFiles () {
             {
               hash: 'test-file',
               name: 'test.jpg',
-              size: 20309209
+              size: 20309209,
+              balance: 1337
             }
           ]
         }
@@ -90,55 +123,7 @@ function getInitFiles () {
         files: { user: user }
       })
     }
-    
-    // TODO: Get this from ipfs
-    var user = [
-      {
-        files: [
-          {
-            hash: 'QmTw6BFqgED...',
-            name: 'test.jpg',
-            size: 20309209
-          }
-        ]
-      },
-      {
-        files: [
-          {
-            hash: 'QmTw6BFqgED..',
-            name: 'test1.jpg',
-            size: 20309209
-          }
-        ]
-      },
-      {
-        files: [
-          {
-            hash: 'QmTw6BFqgED..',
-            name: 'test2.jpg',
-            size: 20309209
-          }
-        ]
-      }
-    ]
 
-    var manager = getManagerContract()
-    var fonline = manager.filecount().c[0]
-
-    console.log('files online')
-    console.log(fonline)
-
-    store.dispatch({
-      type: 'GET_FILES',
-      user: { user: user }
-    })
-
-    store.dispatch({
-      type: 'GET_ONLINE',
-      online: { online: fonline }
-    })
-    //ipfs.get
-    resolve()
   })
 }
 
@@ -276,7 +261,8 @@ export const upload = (hash, value, account, name, size) => {
     user[account].files.push({
       hash: hash,
       name: name,
-      size: size
+      size: size,
+      balance: value
     })
 
 
@@ -296,6 +282,11 @@ export const upload = (hash, value, account, name, size) => {
       ts = ts.slice(4, ts.length)
       ts = '0x'+ts
       console.log(ts)
+
+      // set new contract with file hash
+      var fh = new Buffer(bs58.decode(hash)).toString('hex')
+      fh = fh.slice(4, fh.length)
+      fh = '0x' + fh
 
       managerInst.createFile(ts, {from: web3.eth.accounts[account], value: web3.toWei(value), gas:3000000}, (err, res) => {
         console.log(res)
@@ -343,6 +334,7 @@ export const upload = (hash, value, account, name, size) => {
         if (err) {
           console.log(err)
         }
+        console.log(res)
         if (res.links.length === 0) {
 
           ipfs.get(hash, (err, res) => {
@@ -388,7 +380,7 @@ export const upload = (hash, value, account, name, size) => {
                       console.log('new account balance')
                       const newb = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount]))
                       
-
+                      user[account].files.contract = managerInst.files(managerInst.filecount() - 1)
 
                       // dispatch the new balance
                       store.dispatch({
@@ -396,6 +388,7 @@ export const upload = (hash, value, account, name, size) => {
                         balance: {balance: newb.c}
                       })
                       
+                      // dispatch new user files object
                       store.dispatch({
                         type: 'GET_FILES',
                         user: { user: user }
@@ -410,7 +403,7 @@ export const upload = (hash, value, account, name, size) => {
             console.log(res)
           })
         }
-        
+        console.log('links > 0')
         // for now we assume all objects will be files
         // and each file will contain one level of chunks
         // see possible hash problems with larger files
@@ -437,6 +430,14 @@ export const upload = (hash, value, account, name, size) => {
 
   })
 }
+
+// export const getSeeds = (addy) => {
+//   return new Promise((resolve, reject) => {
+//     console.log('GET SEEDS ADDY')
+//     console.log(addy)
+//     resolve('test')
+//   })
+// }
 
 export const getFile = (file) => {
   return new Promise((resolve, reject) => {

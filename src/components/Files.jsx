@@ -42,8 +42,8 @@ export const Files = React.createClass({
 	        <table className="table-striped-files">
 	          <thead>
 	            <tr>
-			      <th style={{width: 150}}>Hash</th>
-			      <th style={{width: 80}}>Name</th>
+			      <th style={{width: 70}}>Hash</th>
+			      <th style={{width: 110}}>Name</th>
 			      <th style={{width: 80}}>File Size</th>
 			      <th style={{width: 80}}>Seeders</th>
 			      <th style={{width: 150}}>Balance</th>

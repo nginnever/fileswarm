@@ -17,11 +17,11 @@ export const FilesContainer = React.createClass({
     	rand = Math.floor(Math.random()*100000000000000000)
     	files.push(
 		    <tr key={rand}>
-		      <td><a href={'http://ipfs.io/ipfs/' + currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].hash}>{currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].hash}</a></td>
-		      <td>{currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].name}</td>
+		      <td style={{width: 90}}><a href={'http://ipfs.io/ipfs/' + currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].hash}>{currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].hash.slice(0, 10) + '...'}</a></td>
+		      <td style={{width: 150}}>{currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].name}</td>
 		      <td>{currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].size}</td>
-		      <td>14</td>
-		      <td>Ξ 0.3230332323</td>
+          <td>4</td>
+		      <td>Ξ {currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].balance}</td>
 		      <td>100%</td>
 		      <td><span className="icon icon-download"></span></td>
 		    </tr>
@@ -30,6 +30,7 @@ export const FilesContainer = React.createClass({
     return { 
       fileRows: files,
       hash: 'Select File To Create'
+      //getSeeds: this.getSeeds()
     }
   },
   componentWillMount: function() {
@@ -54,11 +55,11 @@ export const FilesContainer = React.createClass({
         rand = Math.floor(Math.random()*100000000000000000)
         files.push(
           <tr key={rand}>
-            <td><a href={'http://ipfs.io/ipfs/' + currentStore.filesReducer.toJSON().user[acc].files[i].hash}>{currentStore.filesReducer.toJSON().user[acc].files[i].hash.slice(0, 10) + '...'}</a></td>
-            <td>{currentStore.filesReducer.toJSON().user[acc].files[i].name}</td>
+            <td style={{width: 90}}><a href={'http://ipfs.io/ipfs/' + currentStore.filesReducer.toJSON().user[acc].files[i].hash}>{currentStore.filesReducer.toJSON().user[acc].files[i].hash.slice(0, 10) + '...'}</a></td>
+            <td style={{width: 150}}>{currentStore.filesReducer.toJSON().user[acc].files[i].name}</td>
             <td>{currentStore.filesReducer.toJSON().user[acc].files[i].size}</td>
-            <td>14</td>
-            <td>Ξ 0.3230332323203</td>
+            <td>4</td>
+            <td>Ξ {currentStore.filesReducer.toJSON().user[acc].files[i].balance}</td>
             <td>100%</td>
             <td><span className="icon icon-download"></span></td>
           </tr>
@@ -73,6 +74,12 @@ export const FilesContainer = React.createClass({
 			})
 		})
   },
+  // getSeeds: function(addy) {
+  //   api.getSeeds(addy).then((seeders) => {
+  //     console.log(seeders)
+  //     return seeders
+  //   })
+  // },
   getFile: function(file) {
     console.log(file)
     const f = file.files[0]
