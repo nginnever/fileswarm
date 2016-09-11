@@ -1,7 +1,7 @@
-import Web3 from 'web3'
-import {store} from '../store'
-import bs58 from 'bs58'
-import IPFS from 'ipfs-api'
+const Web3 = require('web3')
+const store = require('../store').store
+const bs58 = require('bs58')
+const IPFS = require('ipfs-api')
 
 const chunker = require('block-stream2')
 const Readable = require('readable-stream')
@@ -12,7 +12,7 @@ const concat = require('concat-stream')
 const ipfs = window.IpfsApi('localhost', '5001')
 const abiFile = require('../utils/abi.js').file
 const abiManager = require('../utils/abi.js').manager
-const managerAddy = '0x576502fca073b031ec2e45b9c40d600212058a72'
+const managerAddy = '0x5223c88b57523e01764aa9331fb2bf3017d91933'
 const CHUNK_SIZE = 262144
 // import lightwallet from 'eth-lightwallet'
 // import web3hook from 'hooked-web3-provider'
@@ -67,45 +67,16 @@ function ipfsOn () {
   })
 }
 
-function getInitFiles () {
+function getInitFiles (acc) {
   return new Promise((resolve, reject) => {
     const _manager = getManagerContract()
-    var fileshash = _manager.userFiles(web3.eth.accounts[0])
+    var fileshash = _manager.userFiles(web3.eth.accounts[acc])[0]
     console.log('database files hash: ')
+    console.log(_manager.userFiles(web3.eth.accounts[acc])[0])
 
-    // TODO: find a better way tp access struct values in web3
+    // TODO: find a better way to access struct values in web3
     console.log(fileshash)
-    var fh = '1220' + fileshash.slice(2, fileshash.length)
-
-    ipfs.get(new Buffer(fh, 'hex'), (err, res) => {
-      res.pipe(concat((_files) => {
-        _files[0].content.pipe(concat((_users) => {
-          console.log('USER OBJECT from db returned')
-          var userArr = JSON.parse(_users.toString())
-
-          var manager = getManagerContract()
-          var fonline = manager.filecount().c[0]
-
-          console.log('files online')
-          console.log(fonline)
-
-          store.dispatch({
-            type: 'GET_FILES',
-            user: { user: userArr }
-          })
-
-          store.dispatch({
-            type: 'GET_ONLINE',
-            online: { online: fonline }
-          })
-          //ipfs.get
-          resolve()
-
-        }))
-      }))
-    })
-
-    if (fileshash === '0x0') {
+    if (fileshash === '0x0000000000000000000000000000000000000000000000000000000000000000') {
       var user = [
         {
           files: [
@@ -115,6 +86,12 @@ function getInitFiles () {
               size: 20309209,
               balance: 1337
             }
+          ],
+          seeds: [
+            {
+              address: 'test',
+              chunk: 'test'
+            }
           ]
         }
       ]
@@ -122,6 +99,44 @@ function getInitFiles () {
         type: 'GET_FILES',
         files: { user: user }
       })
+
+      resolve()
+    } else {
+    var fh = '1220' + fileshash.slice(2, fileshash.length)
+    console.log(fh)
+    console.log(bs58.encode(new Buffer(fh, 'hex')).toString())
+      ipfs.get(new Buffer(fh, 'hex'), (err, res) => {
+        if (err) {
+          console.log(err)
+        }
+        res.pipe(concat((_files) => {
+          _files[0].content.pipe(concat((_users) => {
+            console.log('USER OBJECT from db returned')
+            var userArr = JSON.parse(_users.toString())
+            console.log(userArr)
+
+            var manager = getManagerContract()
+            var fonline = manager.filecount().c[0]
+
+            console.log('files online')
+            console.log(fonline)
+
+            store.dispatch({
+              type: 'GET_FILES',
+              user: { user: userArr }
+            })
+
+            store.dispatch({
+              type: 'GET_ONLINE',
+              online: { online: fonline }
+            })
+            
+            resolve()
+
+          }))
+        }))
+      })
+
     }
 
   })
@@ -139,6 +154,10 @@ function getFileContract (addy) {
   var fileInst = file.at(addy)
 
   return fileInst
+}
+
+function fsc (size) {
+  return chunker({ size: size, zeroPadding: false })
 }
 
 // ACCOUNT API
@@ -207,7 +226,7 @@ export const init = () => {
       getAccounts().then((res) => {
         console.log('getting balance from store')
         getBalance(0).then(() => {
-          getInitFiles().then(() => {
+          getInitFiles(0).then(() => {
             resolve()
           })
           //var hexenc = '1220bb72da8347160f5b6e001345e90d7213bd166aad262e419c98fb87b5484ef578'
@@ -264,6 +283,9 @@ export const upload = (hash, value, account, name, size) => {
       size: size,
       balance: value
     })
+    
+    console.log('NEW USER FILES ARRAY')
+    console.log(user)
 
 
     ipfs.add(new Buffer(JSON.stringify(user)), (err, res) => {
@@ -272,23 +294,26 @@ export const upload = (hash, value, account, name, size) => {
       }
       console.log('----IPFS add user files res----')
       console.log(res)
-      var _files = currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount]
-      console.log('files object from store')
-      console.log(_files)
+
+      // var _files = currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount]
+      // console.log('files object from store')
+      // console.log(_files)
 
       // set the new users object hash in the manager contract
       var ts = new Buffer(bs58.decode(res[0].hash)).toString('hex')
       console.log(ts)
       ts = ts.slice(4, ts.length)
       ts = '0x'+ts
+      console.log('New users hash')
       console.log(ts)
 
       // set new contract with file hash
       var fh = new Buffer(bs58.decode(hash)).toString('hex')
       fh = fh.slice(4, fh.length)
       fh = '0x' + fh
+      console.log(fh)
 
-      managerInst.createFile(ts, {from: web3.eth.accounts[account], value: web3.toWei(value), gas:3000000}, (err, res) => {
+      managerInst.createFile(ts, fh, {from: web3.eth.accounts[account], value: value.toString(), gas:3000000}, (err, res) => {
         console.log(res)
         console.log(err)
         console.log(managerInst.files(managerInst.filecount() - 1))
@@ -296,7 +321,7 @@ export const upload = (hash, value, account, name, size) => {
     })
     // wait for tx to be mined
     // TODO: use solidity events
-    setTimeout(wait, 15000)
+    setTimeout(wait, 20000)
 
     function wait() {
       // find dag links and create the chunks in file contract
@@ -304,29 +329,17 @@ export const upload = (hash, value, account, name, size) => {
       // TODO: listen to solidity events instead of wait()
 
       // get the balance of the file contract
+      // Get the new file contract address
       console.log('new file contract addy')
-      console.log(managerInst.files(managerInst.filecount() - 1))
+      console.log(managerInst.userFiles(web3.eth.accounts[account])[2])
       console.log('userFiles')
-
-      // DEBUG: getLatest is not a function
-      //managerInst.getLatest({from: web3.eth.accounts[account], gas:3000000}, (err, res) => {
-      //  if (err) {
-      //    console.log(err)
-      //  }
-      //})
-
-      // This only works under the assumption that another tx hasnt set a file after
-      var fileInst = getFileContract(managerInst.files(managerInst.filecount() - 1))
+      
+      var fileInst = getFileContract(managerInst.userFiles(web3.eth.accounts[account])[2])
 
       console.log('new file info')
       console.log('-------')
       console.log(fileInst)
       console.log(fileInst.balance())
-
-      // DEBUG: fileHash is not a function, yet works in geth console
-      //console.log(fileInst.fileHash())
-
-      //var fileInst = getFileContract(managerInst.userFiles(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount]).lastFile)
       
       // Set chunks
       ipfs.object.get(hash, (err, res) => {
@@ -334,7 +347,7 @@ export const upload = (hash, value, account, name, size) => {
         if (err) {
           console.log(err)
         }
-        console.log(res)
+        //console.log(res)
         if (res.links.length === 0) {
 
           ipfs.get(hash, (err, res) => {
@@ -346,15 +359,14 @@ export const upload = (hash, value, account, name, size) => {
                 console.log('returned data from object get with no links')
                 console.log(_content.length)
 
-                // we need to take 100 bytes from the full chunk
+                // we need to take a smaller chunk from the full chunk
                 // for the hash to be stored in the contract 
-                // since contracts can only verify 120 bytes atm
+                // since contracts can only verify 32 bytes atm
                 var smallChunk =  _content.toString('hex')
                 smallChunk = smallChunk.slice(0, 100)
 
                 // input format for verifying chunk
                 // this is for seeding as well
-                // var smallChunkStr = '0x' + smallChunk.join('')
                 console.log(smallChunk.length)
 
                 //protobuf encode the smaller chunk
@@ -372,7 +384,7 @@ export const upload = (hash, value, account, name, size) => {
                   fileInst.addChunk(dh, {from: web3.eth.accounts[account], gas: 3000000}, (err, res) => {
                     if (err) console.log(err)
 
-                    setTimeout(wait2, 15000)
+                    setTimeout(wait2, 20000)
 
                     function wait2() {
                       console.log(fileInst.chunks(0))
@@ -380,7 +392,7 @@ export const upload = (hash, value, account, name, size) => {
                       console.log('new account balance')
                       const newb = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount]))
                       
-                      user[account].files.contract = managerInst.files(managerInst.filecount() - 1)
+                      //user[account].files.contract = managerInst.files(managerInst.filecount() - 1)
 
                       // dispatch the new balance
                       store.dispatch({
@@ -402,28 +414,16 @@ export const upload = (hash, value, account, name, size) => {
             
             console.log(res)
           })
-        }
-        console.log('links > 0')
-        // for now we assume all objects will be files
-        // and each file will contain one level of chunks
-        // see possible hash problems with larger files
-        for (var i = 0; i < res.links.length; i++) {
+        } else {
+          console.log('links > 0')
+          // for now we assume all objects will be files
+          // and each file will contain one level of chunks
+          // see possible hash problems with larger files
+          for (var i = 0; i < res.links.length; i++) {
 
+          }
         }
       })
-
-
-      // USE THIS FOR SETTING FILES REDUCER IN INIT
-      // ipfs.get(res[0].hash, (err, res) => {
-      //   res.pipe(concat((_files) => {
-      //     _files[0].content.pipe(concat((_users) => {
-      //       console.log(JSON.parse(_users.toString()))
-      //     }))
-      //   }))
-      //   console.log(err)
-      //   console.log(res)
-      // })
-
 
       // console.log(managerInst.userFiles(web3.eth.accounts[account]))
     }
@@ -439,6 +439,11 @@ export const upload = (hash, value, account, name, size) => {
 //   })
 // }
 
+export const getInitFile = (acc) => {
+  return new Promise((resolve, reject) => {
+    resolve(getInitFiles(acc))
+  })
+}
 export const getFile = (file) => {
   return new Promise((resolve, reject) => {
     // ipfs.add(fileReaderStream(file), (err, res) => {
@@ -510,15 +515,3 @@ export const getFile = (file) => {
     })
   })
 }
-
-
-function fsc (size) {
-  return chunker({ size: size, zeroPadding: false })
-}
-
-    function test (stream) {
-      console.log(stream)
-      return new Promise((resolve, reject) => {
-        resolve('test2323')
-      })
-    }

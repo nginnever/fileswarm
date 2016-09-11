@@ -46,6 +46,12 @@ export const FilesContainer = React.createClass({
       }
       console.log('files store subscribe triggered')
       console.log(currentStore.filesReducer.toJSON().user)
+      console.log(currentStore.filesReducer.toJSON().user[acc])
+
+      if (currentStore.filesReducer.toJSON().user[acc] === undefined) {
+        api.getInitFile(acc)
+        return
+      }
 
       var files = []
       let rand
