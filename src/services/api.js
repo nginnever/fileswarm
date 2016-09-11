@@ -18,6 +18,7 @@ const CHUNK_SIZE = 262144
 // import web3hook from 'hooked-web3-provider'
 
 let web3
+var intervalID
 //let ipfs
 // import {createDaemon} from '../utils/ipfs'
 
@@ -67,6 +68,29 @@ function ipfsOn () {
   })
 }
 
+function getInitSeeds (acc) {
+  return new Promise((resolve, reject) => {
+    var user = [
+      {
+        chunks: [
+          {
+            file: 'test-file',
+            address: 'test.jpg',
+            size: 2345,
+            success: 203
+          }
+        ]
+      }
+    ]
+    
+    store.dispatch({
+      type: 'GET_SEEDS',
+      user: { user: user }
+    })
+    resolve()
+  })
+}
+
 function getInitFiles (acc) {
   return new Promise((resolve, reject) => {
     const _manager = getManagerContract()
@@ -85,12 +109,6 @@ function getInitFiles (acc) {
               name: 'test.jpg',
               size: 20309209,
               balance: 1337
-            }
-          ],
-          seeds: [
-            {
-              address: 'test',
-              chunk: 'test'
             }
           ]
         }
@@ -160,6 +178,46 @@ function fsc (size) {
   return chunker({ size: size, zeroPadding: false })
 }
 
+function getChunks () {
+  var currentStore = store.getState()
+  var user = currentStore.seedReducer.toJSON().user
+  var seeds = []
+  var managerInst = getManagerContract()
+  // search manager contract files
+
+  // for each file in files() grab the file hash
+
+  // ipfs get the file hash
+
+  // set as a challenger
+  
+  // create the new users seed object from new seed grabbed
+  //if (currentStore.seedReducer.toJSON().disk <= currentStore.seedReducer.toJSON().amtseed)
+  user[currentStore.accountReducer.toJSON().activeAccount].chunks.push({
+    file: 'weeee',
+    address: 'weeee',
+    size: 1234,
+    success: 23
+  })
+  console.log(user)
+
+  store.dispatch({
+    type: 'GET_SEEDS',
+    user: {user: user}
+  })
+  
+  
+  // set the total amount of space used
+  //var amtseed = currentStore.seedReducer.toJSON().amtseed
+  // var amtseed = 1000
+  // store.dispatch({
+  //   type: 'GET_AMT',
+  //   amtseed: {amtseed: amtseed}
+  // })
+
+  return
+}
+
 // ACCOUNT API
 export const getBalance = (num) => {
   return new Promise((resolve, reject) => {
@@ -222,25 +280,27 @@ export const init = () => {
     console.log('begin setting up store')
     console.log('calling set account store')
     setAccount(0).then(() => {
+      return
+    }).then(() => {
       console.log('getting accounts from geth')
+    }).then(() => {
       getAccounts().then((res) => {
-        console.log('getting balance from store')
-        getBalance(0).then(() => {
-          getInitFiles(0).then(() => {
-            resolve()
-          })
-          //var hexenc = '1220bb72da8347160f5b6e001345e90d7213bd166aad262e419c98fb87b5484ef578'
-          //var testhash = bs58.encode(new Buffer(hexenc, 'hex'))
-          //console.log(testhash)
-          //console.log(new Buffer(hexenc, 'hex'))
-          //console.log(bs58.decode(testhash, 'utf8'))
-          //console.log(new Buffer(bs58.decode(testhash)))
-          //ipfsOn().then((id) => {
-          //  console.log('test')
-          //  console.log(id)
-          //  resolve()
-          //})
-        })
+        return res
+      })
+    }).then((res) => {
+      console.log('getting balance from store')
+      getBalance(0).then(() => {
+        return
+      })
+    }).then(() => {
+      console.log('init files')
+      getInitFiles(0).then(() => {
+        return
+      })
+    }).then(() => {
+      console.log('init seeds')
+      getInitSeeds().then(() => {
+        resolve()
       })
     })
   })
@@ -264,6 +324,28 @@ export const getDiskspace = (input) => {
       type: 'GET_DISKSPACE',
       disk: {disk: input}
     })
+  })
+}
+
+export const startSeeding = () => {
+  return new Promise((resolve, reject) => {
+    intervalID = window.setInterval(loop, 5000)
+
+    function loop() {
+      console.log('weee')
+
+      // add new chunks
+      getChunks()
+
+      // challenge current chunks
+
+    }
+  })
+}
+
+export const stopSeeding = () => {
+  return new Promise((resolve, reject) => {
+    window.clearInterval(intervalID)
   })
 }
 

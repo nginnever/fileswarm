@@ -5,15 +5,17 @@ import {api} from '../services'
 
 export const SeedContainer = React.createClass({
 	getInitialState: function() {
+		var currentStore = store.getState()
     var chunks = []
     let rand
-    for(var i = 0; i < 100; i++) {
+    for(var i = 0; i < currentStore.seedReducer.toJSON().user[0].chunks.length; i++) {
     	rand = Math.floor(Math.random()*100000000000000000)
     	chunks.push(
 		    <tr key={rand}>
-		      <td>QmbH7fpAV1FgMp6J7GZXUV6rj6Lck5tDix9JJGBSjFPgUd</td>
-		      <td>324</td>
-		      <td>Ξ 0.3230332323203</td>
+		      <td>{currentStore.seedReducer.toJSON().user[0].chunks[i].file}</td>
+		      <td>{currentStore.seedReducer.toJSON().user[0].chunks[i].address}</td>
+		      <td>{currentStore.seedReducer.toJSON().user[0].chunks[i].size}</td>
+		      <td>{currentStore.seedReducer.toJSON().user[0].chunks[i].success}</td>
 		    </tr>
     	)
     }
@@ -28,9 +30,37 @@ export const SeedContainer = React.createClass({
 		store.subscribe(function() {
 			console.log('seed store subscribe triggered')
 			var currentStore = store.getState()
+      var acc
+      if (currentStore.accountReducer.toJSON().activeAccount === undefined) {
+        acc = 0
+      } else {
+        acc = currentStore.accountReducer.toJSON().activeAccount
+      }
+      console.log(currentStore.seedReducer.toJSON().user[acc])
+      if (currentStore.seedReducer.toJSON().user[acc] === undefined) {
+        api.getInitSeed(acc)
+        return
+      }
+
+	    var chunks = []
+	    let rand
+	    for(var i = 0; i < currentStore.seedReducer.toJSON().user[acc].chunks.length; i++) {
+	    	rand = Math.floor(Math.random()*100000000000000000)
+	    	chunks.push(
+			    <tr key={rand}>
+			      <td>{currentStore.seedReducer.toJSON().user[acc].chunks[i].file}</td>
+			      <td>{currentStore.seedReducer.toJSON().user[acc].chunks[i].address}</td>
+			      <td>{currentStore.seedReducer.toJSON().user[acc].chunks[i].size}</td>
+			      <td>{currentStore.seedReducer.toJSON().user[acc].chunks[i].success}</td>
+			    </tr>
+	    	)
+	    }
+
+			var currentStore = store.getState()
 			_this.setState({
 				max: currentStore.seedReducer.toJSON().max,
-				disk: currentStore.seedReducer.toJSON().disk
+				disk: currentStore.seedReducer.toJSON().disk,
+				chunks: chunks
 			})
 		})
 	},

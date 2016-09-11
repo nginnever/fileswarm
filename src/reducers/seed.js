@@ -10,6 +10,8 @@ export default function(state = Map(), action) {
 	  return setState(state, action.max)
 	case 'GET_DISKSPACE':
 	  return setState(state, action.disk)
+	case 'GET_SEEDS':
+	  return setState(state, action.user)
 	}
 	return state
 }

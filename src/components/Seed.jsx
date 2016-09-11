@@ -31,7 +31,7 @@ export const Seed = React.createClass({
 			    </tr>
 			    <tr>
 			      <td className="seedcenter"> Set Max Diskspace </td>
-			      <td className="seedcenter"> </td>
+			      <td className="seedcenter"> Above stats coming soon!</td>
 			    </tr>
 			    <tr>
 			      <td className="seedcenter"><input ref="max" type="text" size="15" onChange={() => this.props.setmax(this.refs.max)}/></td>
@@ -41,9 +41,10 @@ export const Seed = React.createClass({
 			<table className="table-striped">
 			  <thead>
 			    <tr>
-			      <th>Chunk</th>
+			      <th>File</th>
+			      <th>Address</th>
+			      <th>Size</th>
 			      <th>Successful Challenges</th>
-			      <th>Rewarded</th>
 			    </tr>
 			  </thead>
 			  <tbody>

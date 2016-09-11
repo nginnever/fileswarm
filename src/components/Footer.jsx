@@ -9,9 +9,9 @@ export const Footer = React.createClass({
 		return(
 			<footer className="toolbar toolbar-footer">
 			  <div className="toolbar-actions">
-			    <button className="btn btn-default">
-			      <span className="icon icon-stop"></span>
-			      &nbsp; Stop Seeding
+			    <button className="btn btn-default" onClick={() => this.props.startSeeding()}>
+			      <span className={this.props.seeding ? 'icon icon-stop' : 'icon icon-play'}></span>
+			      &nbsp; {this.props.seeding ? 'Stop Seeding' : 'Start Seeding'}
 			    </button>
 			    <button className={this.props.unlocked ? "btn btn-primary pull-right" : "btn btn-warning pull-right" } onClick={this.props.openUnlock}>
 			      <Modal 
