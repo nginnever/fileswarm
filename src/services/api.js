@@ -331,9 +331,16 @@ export const getDiskspace = (input) => {
 
 export const startSeeding = () => {
   return new Promise((resolve, reject) => {
-    intervalID = window.setInterval(loop, 5000)
+    // two intervals, one for pucking up seeds, 
+    // the other for challenging
 
-    function loop() {
+    // Seed interval
+    intervalID = window.setInterval(seedLoop, 5000)
+
+    // Challenge interval
+    intervalID2 = window.setInterval(challenge, 20000)
+
+    function seedLoop() {
       console.log('weee')
 
       // add new chunks
@@ -342,12 +349,19 @@ export const startSeeding = () => {
       // challenge current chunks
 
     }
+
+    function challenge() {
+      console.log('od things')
+    }
+
+
   })
 }
 
 export const stopSeeding = () => {
   return new Promise((resolve, reject) => {
     window.clearInterval(intervalID)
+    window.clearInterval(intervalID2)
   })
 }
 
