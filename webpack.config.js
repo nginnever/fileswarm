@@ -6,7 +6,7 @@ const config = {
   entry: {
     app: [
       'webpack/hot/only-dev-server',
-      './src/index.jsx'
+      './src/index.js'
     ]
   },
   externals: {

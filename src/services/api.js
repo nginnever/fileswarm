@@ -117,12 +117,11 @@ function getInitFiles (acc) {
         type: 'GET_FILES',
         files: { user: user }
       })
-
       resolve()
     } else {
-    var fh = '1220' + fileshash.slice(2, fileshash.length)
-    console.log(fh)
-    console.log(bs58.encode(new Buffer(fh, 'hex')).toString())
+      var fh = '1220' + fileshash.slice(2, fileshash.length)
+      console.log(fh)
+      console.log(bs58.encode(new Buffer(fh, 'hex')).toString())
       ipfs.get(new Buffer(fh, 'hex'), (err, res) => {
         if (err) {
           console.log(err)
@@ -229,7 +228,7 @@ export const getBalance = (num) => {
       type: 'GET_BALANCE',
       balance: { balance: balance.c }
     })
-
+    console.log('inside getBalance')
     resolve(balance)
   })
 }
@@ -240,6 +239,7 @@ export const setAccount = (num) => {
       type: 'GET_ACCOUNT',
       activeAccount: { activeAccount: num }
     })
+    console.log('inside getAccount')
     resolve(true)
   })
 }
@@ -252,6 +252,7 @@ export const getAccounts = () => {
         type: 'GET_ACCOUNTS',
         accounts: { accounts: result }
       })
+      console.log('inside getAccounts')
       resolve(result)
     })
   })
@@ -276,34 +277,35 @@ export const unlock = (account, password) => {
 // Initialization tasks
 // TODO error handle
 export const init = () => {
-  return new Promise((resolve, reject) => {
-    console.log('begin setting up store')
-    console.log('calling set account store')
-    setAccount(0).then(() => {
-      return
-    }).then(() => {
+  console.log('begin setting up store')
+  console.log('calling set account store')
+  return setAccount(0)
+    .then((res) => {
+      console.log('after set account')
+      console.log(res)
       console.log('getting accounts from geth')
-    }).then(() => {
-      getAccounts().then((res) => {
-        return res
-      })
-    }).then((res) => {
-      console.log('getting balance from store')
-      getBalance(0).then(() => {
-        return
-      })
-    }).then(() => {
-      console.log('init files')
-      getInitFiles(0).then(() => {
-        return
-      })
-    }).then(() => {
-      console.log('init seeds')
-      getInitSeeds().then(() => {
-        resolve()
-      })
     })
-  })
+    .then(() => getAccounts())
+    .then((res) => {
+      console.log('after get accounts')
+      console.log(res)
+      console.log('getting balance from store')
+    })
+    .then(() => getBalance(0))
+    .then((res) => {
+      console.log('after get balance')
+      console.log(res)
+      console.log('init files')
+    })
+    .then(() => getInitFiles(0))
+    .then(() => {
+      console.log('after init files')
+      console.log('init seeds')
+    })
+    .then(() => getInitSeeds())
+    .then(() => {
+      console.log('finished Initialization')
+    })
 }
 
 // SEEDING API

@@ -11,6 +11,7 @@ export const FilesContainer = React.createClass({
     var currentStore = store.getState()
     var files = []
     let rand
+          console.log(currentStore)
     //var h = currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].hash
     //console.log(currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files.length)
     for(var i = 0; i < currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files.length; i++) {
