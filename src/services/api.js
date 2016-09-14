@@ -2,6 +2,7 @@ const Web3 = require('web3')
 const store = require('../store').store
 const bs58 = require('bs58')
 const IPFS = require('ipfs-api')
+const each = require('async').eachSeries
 
 const chunker = require('block-stream2')
 const Readable = require('readable-stream')
@@ -18,7 +19,10 @@ const CHUNK_SIZE = 262144
 // import web3hook from 'hooked-web3-provider'
 
 let web3
+
+// window interval for seeding challenges
 var intervalID
+var intervalID2
 //let ipfs
 // import {createDaemon} from '../utils/ipfs'
 
@@ -182,28 +186,74 @@ function getChunks () {
   var user = currentStore.seedReducer.toJSON().user
   var seeds = []
   var managerInst = getManagerContract()
+
   // search manager contract files
-
-  // for each file in files() grab the file hash
-
-  // ipfs get the file hash
-
-  // set as a challenger
+  var _fileslength = managerInst.filecount().c[0]
+  console.log('MANAGER CONTRACT FILES ARRAY')
+  console.log(_fileslength)
   
+  // for each file in files() grab the file hash
+  // use async here, this array will get large over time
+  // TODO: add solidity and api methods for removig old files
+  for (var i = 0; i < _fileslength - 1; i++) {
+    var _filesInst = getFileContract(managerInst.files(i))
+    // look at attributes of all files here
+    // console.log(_filesInst.chunks())
+
+    var _fileHash = _filesInst.fileHash()
+    _fileHash = _fileHash.slice(2, _fileHash.length)
+    _fileHash = '1220' + _fileHash
+    console.log(_fileHash)
+    seeds.push(_fileHash)
+  }
+  
+  console.log('FINISHED DOWNLOADING SEEDS')
+
+  each(seeds, (element, callback) => {
+    // ipfs get the file hash
+    ipfs.get(new Buffer(element, 'hex'), (err, res) => {
+      // Don't do anything with this res, just check that 
+      // downloading the file from ipfs didn't fail
+      // this could hang the app and take time
+      if (err) {
+        console.log(err)
+      }
+
+      console.log('New File Downloaded, ready to seed!')
+
+      // set as a challenger
+      //_filesIsnt.seed(getFileContract(managerInst.files(i)), {from: web3.eth.accounts[currentStore.seedReducer.toJSON().user, gas:3000000]})
+
+      // _filesInst.addSeeder(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount], {from: web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount], gas: 3000000})
+      // console.log('added seeder to file contract: ')
+      // console.log(managerInst.files(i))
+
+    })
+    setTimeout(_wait, 3000)
+    function _wait () {
+      console.log('function waited for contract to be mined')
+      // check the file to be sure seeding
+      callback()
+    }
+  }, (err) => {
+    console.log('FINISHED PICKING UP SEEDS')
+    user[currentStore.accountReducer.toJSON().activeAccount].chunks.push({
+      file: 'weeee',
+      address: 'weeee',
+      size: 1234,
+      success: 23
+    })
+    console.log(user)
+
+    store.dispatch({
+      type: 'GET_SEEDS',
+      user: {user: user}
+    })
+
+  })
+
   // create the new users seed object from new seed grabbed
   //if (currentStore.seedReducer.toJSON().disk <= currentStore.seedReducer.toJSON().amtseed)
-  user[currentStore.accountReducer.toJSON().activeAccount].chunks.push({
-    file: 'weeee',
-    address: 'weeee',
-    size: 1234,
-    success: 23
-  })
-  console.log(user)
-
-  store.dispatch({
-    type: 'GET_SEEDS',
-    user: {user: user}
-  })
   
   
   // set the total amount of space used
@@ -215,6 +265,22 @@ function getChunks () {
   // })
 
   return
+}
+
+function challenge () {
+  // grab the current seeds from the store.
+
+  // for each seed contract, get the latest challenge hash
+
+  // ipfs get the chunks (should be in local storage)
+
+  // slice the first 100 bytes
+
+  // send the hex of the chunk to the contract
+
+  // update UI state with new challenge reward. 
+
+  // TODO: adjust timings of payouts 
 }
 
 // ACCOUNT API
@@ -334,24 +400,27 @@ export const startSeeding = () => {
     // two intervals, one for pucking up seeds, 
     // the other for challenging
 
-    // Seed interval
-    intervalID = window.setInterval(seedLoop, 5000)
+    // Seed interval, every 3 minutes look for new files
+    //intervalID = window.setInterval(seedLoop, 5000)
+    seedLoop()
 
-    // Challenge interval
-    intervalID2 = window.setInterval(challenge, 20000)
-
+    // Challenge interval, every 30 seconds challenge your chunks
+    intervalID2 = window.setInterval(challenge, 30000)
+    
+    // this doesnt need a loop, can just start and stop when 
+    // max diskspace is reached.
+    // TODO: add termination method to this.
     function seedLoop() {
-      console.log('weee')
+      console.log('starting seed loop')
 
       // add new chunks
       getChunks()
-
-      // challenge current chunks
-
     }
 
     function challenge() {
-      console.log('od things')
+      console.log('challenge triggered')
+
+      //challenge all existing seeds
     }
 
 
