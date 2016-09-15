@@ -6,7 +6,7 @@ export const Seed = React.createClass({
 	render: function() {
 		return(
 			<div>
-			<table className="table-striped-seed">
+			<table>
 			  <thead>
 			    <tr>
 			      <th className="seedcenter" style={{width: 200}}> Diskspace Options</th>
@@ -15,7 +15,7 @@ export const Seed = React.createClass({
 			  </thead>
 			  <tbody>
 			  	<tr>
-			      <td className="seedcenter"> Choose Ammount To Seed </td>
+			      <td className="seedcenter"> Choose Amount To Seed </td>
 			      <td className="seedcenter"> IPFS: Online | Geth: Online < /td>
 			    </tr>
 			    <tr className="seedcenter">

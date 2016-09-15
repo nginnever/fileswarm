@@ -7,7 +7,7 @@ export const Files = React.createClass({
 		return(
 			<div>
 
-			<table className="table-striped-seed">
+			<table>
 			  <thead>
 			    <tr>
 			      <th className="seedcenter" style={{width: 200}}> Upload File</th>
