@@ -38,7 +38,9 @@ export const SeedContainer = React.createClass({
       }
       console.log(currentStore.seedReducer.toJSON().user[acc])
       if (currentStore.seedReducer.toJSON().user[acc] === undefined) {
-        api.getInitSeed(acc)
+      	console.log('test')
+      	console.log(acc)
+        api.initSeed(acc)
         return
       }
 

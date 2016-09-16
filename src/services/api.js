@@ -43,7 +43,7 @@ function setWeb3() {
   } else {
     // set the provider you want from Web3.providers
     // local server
-    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
+    web3 = new Web3(new Web3.providers.HttpProvider("http://192.168.0.28:8545"))
     //web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
     // demo server
     // web3 = new Web3(new Web3.providers.HttpProvider("http://149.56.133.176:8545"))
@@ -75,23 +75,27 @@ function ipfsOn () {
 
 function getInitSeeds (acc) {
   return new Promise((resolve, reject) => {
-    var user = [
-      {
-        chunks: [
-          {
-            file: 'test-file',
-            address: 'test.jpg',
-            size: 2345,
-            success: 203
-          }
-        ]
-      }
-    ]
-    
+    var currentStore = store.getState()
+    var user = currentStore.seedReducer.toJSON().user
+
+    if (user === undefined) user = []
+
+    if (user[acc] === undefined) {
+      user[acc] = {chunks: []}
+    }
+
+    user[acc].chunks.push({
+      file: 'test-file',
+      address: 'test.jpg',
+      size: 2345,
+      success: 203
+    })
+
     store.dispatch({
       type: 'GET_SEEDS',
-      user: { user: user }
+      user: {user: user}
     })
+
     resolve()
   })
 }
@@ -199,7 +203,7 @@ function getSeeds () {
   // for each file in files() grab the file hash
   // use async here, this array will get large over time
   // TODO: add solidity and api methods for removig old files
-  for (var i = 0; i < _fileslength - 1; i++) {
+  for (var i = 0; i < _fileslength; i++) {
     if (stopSeed) return // weird bug here
     _filesInst = getFileContract(managerInst.files(i))
     // look at attributes of all files here
@@ -212,8 +216,10 @@ function getSeeds () {
     seeds.push(_fileHash)
   }
   
+  // TODO: make picking up seeds at random index
   console.log('FINISHED DOWNLOADING SEEDS')
-
+  
+  // TODO: consider eachSeries with parallel limir
   each(seeds, (element, callback) => {
     if (stopSeed) {
       callback()
@@ -235,13 +241,16 @@ function getSeeds () {
       _faddy = managerInst.files(fcount)
       _filesInst = getFileContract(_faddy)
       fcount++
-      //_filesInst.addSeeder(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount], {from: web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount], gas: 3000000})
+      _filesInst.addSeeder(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount], {from: web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount], gas: 3000000})
       console.log('added seeder to file contract: ')
       console.log(managerInst.files(fcount))
 
     })
-    setTimeout(_wait, 10000)
+    setTimeout(_wait, 15000)
     function _wait () {
+      if (stopSeed) {
+        return
+      }
       console.log('function waited for contract to be mined')
       var format = _filesInst.fileHash()
       format = '1220' + format.slice(2, format.length)
@@ -254,10 +263,21 @@ function getSeeds () {
       })
       console.log(user)
 
+      const newb = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount]))
+      
+      //user[account].files.contract = managerInst.files(managerInst.filecount() - 1)
+
+      // dispatch the new balance
+      store.dispatch({
+        type: 'GET_BALANCE',
+        balance: {balance: newb.c}
+      })
+
       store.dispatch({
         type: 'GET_SEEDS',
         user: {user: user}
       })
+
 
       // check the file to be sure seeding
       callback()
@@ -287,19 +307,19 @@ function c () {
   var currentStore = store.getState()
   var chunks = currentStore.seedReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount]
   var _managerInst = getManagerContract()
-  var _filesInst
-  // TODO: need one for each chunk
-  var prevchal = '0x0000000000000000000000000000000000000000000000000000000000000000'
-  var tick = 0
 
   console.log('challenge function chunks')
   console.log(chunks)
 
   // for each seed contract, get the latest challenge hash
   each(chunks.chunks, (element, callback) => {
+    if (stopSeed) {
+      callback()
+      return
+    }
     console.log(element.address)
     console.log('-------------------')
-    _filesInst = getFileContract(element.address)
+    var _filesInst = getFileContract(element.address)
     if (_filesInst.address == 'test.jpg') {
       callback()
       return
@@ -311,20 +331,28 @@ function c () {
       }
       console.log(res)
 
-      // assume first seen challenge hash is 0x0
-      // then first round will always skip to awnsering a current challenge
-      // unless a contract has never been challenged
-      // The first client to see that their challenge hash local 
-      // equals the contract hash, will set a new challenge hash
-      // TODO: Change this to round, theres random chance that 
-      // a challenge hash will be the same one after reseting causing
-      // the client to skip a viable challenge round for the same hash
-      // as the previous round. Review timing issues here.
-      if (res === prevchal) {
+      // check to see if the round number has increased beyond the seeders 
+      // round count. If the seeders count is lower then the seeders has not
+      // challenged the new round.
+      // If round counts are equal, try setting a new challenge on the contract
+      console.log('*********************')
+      console.log(_filesInst.seeders(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount])[2].c[0])
+      console.log(_filesInst.round().c[0])
+
+      // if (_filesInst.challengeHash() === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+      //   callback()
+      //   return
+      // }
+
+      if (_filesInst.seeders(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount])[2].c[0] === _filesInst.round().c[0] || 
+          _filesInst.challengeHash() === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+        console.log('setting new challenge')
         _filesInst.setNewChallenge({from: web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount], gas: 3000000})
         callback()
         return
       } else {
+        console.log('answering challenge')
+        // if the seeders round number is lower then we can answer challenge
         // ipfs get the chunks (should be in local storage)
         var _h = _filesInst.challengeHash()
         _h = '1220' + _h.slice(2, _h.length)
@@ -334,47 +362,59 @@ function c () {
           }
 
           // slice the first 100 bytes
+          if (res) {
+            res.pipe(concat((_files) => {
+              _files[0].content.pipe(concat((_content) => {
+                console.log('returned data from challenge hash')
+                //console.log(_content)
 
-          res.pipe(concat((_files) => {
-            _files[0].content.pipe(concat((_content) => {
-              console.log('returned data from challenge hash')
-              console.log(_content)
-
-              // we need to take a smaller chunk from the full chunk
-              // for the hash to be stored in the contract 
-              // since contracts can only verify 32 bytes atm
-              // TODO: account for chunks < 100 bytes
-              var s =  _content.toString('hex')
-              console.log(s)
-              console.log(s.length)
-              s = '0x' + s
+                // we need to take a smaller chunk from the full chunk
+                // for the hash to be stored in the contract 
+                // since contracts can only verify 32 bytes atm
+                // TODO: account for chunks < 100 bytes
+                var s =  _content.toString('hex')
+                console.log(s)
+                console.log(s.length)
+                s = '0x' + s
 
 
-              _filesInst.challenge(s, {from: web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount], gas: 3000000}, (err, res) => {
-                if (err) console.log(err)
+                _filesInst.challenge(s, {from: web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount], gas: 3000000}, (err, res) => {
+                  if (err) console.log(err)
 
-                setTimeout(wait2, 20000)
+                  setTimeout(wait2(_filesInst), 20000)
 
-                function wait2() {
-                  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!')
-                  console.log('new challenge info')
-                  console.log(_filesInst.test())
-                  console.log('balance')
-                  console.log(_filesInst.balance())
-                  console.log(_filesInst.seeders(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount])[2])
-                  console.log(_filesInst.seeders(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount])[0])
-                  // update UI state when finished
-                  prevchal = _filesInst.challengeHash()
-                  
-                }
+                  function wait2(_f) {
+                    if (stopSeed) {
+                      callback()
+                      return
+                    }
+                    //console.log('!!!!!!!!!!!!!!!!!!!!!!!!!')
+                    console.log('new challenge info')
+                    //console.log(_f.test())
+                    //console.log('balance')
+                    console.log(_f.balance().c[0])
+                    //console.log(_f.seeders(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount])[2].c[0])
+                    //console.log(_f.seeders(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount])[0])
+                    // update UI state when finished
 
-              })
+                    const newb = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount]))
+                    
+                    //user[account].files.contract = managerInst.files(managerInst.filecount() - 1)
 
+                    // dispatch the new balance
+                    store.dispatch({
+                      type: 'GET_BALANCE',
+                      balance: {balance: newb.c}
+                    })
+                  }
+                  //callback()
+                })
+
+              }))
             }))
-          }))
-
+          }
+          callback()
         })
-        callback()
       }
     })
     
@@ -434,7 +474,7 @@ export const getAccounts = () => {
 export const unlock = (account, password) => {
   return new Promise((resolve, reject) => {
     web3 = setWeb3()
-    web3.personal.unlockAccount(web3.eth.accounts[account], password, (err, res) => {
+    web3.personal.unlockAccount(web3.eth.accounts[account], password, 10000, (err, res) => {
       if (err) {
         reject(err)
       }
@@ -475,7 +515,7 @@ export const init = () => {
       console.log('after init files')
       console.log('init seeds')
     })
-    .then(() => getInitSeeds())
+    .then(() => getInitSeeds(0))
     .then(() => {
       console.log('finished Initialization')
     })
@@ -512,7 +552,7 @@ export const startSeeding = () => {
     //intervalID = window.setInterval(seedLoop, 5000)
 
     // Challenge interval, every 30 seconds challenge your chunks
-    intervalID2 = window.setInterval(challenge, 30000)
+    intervalID2 = window.setInterval(challenge, 40000)
     
     // this doesnt need a loop, can just start and stop when 
     // max diskspace is reached.
@@ -537,6 +577,12 @@ export const stopSeeding = () => {
     window.clearInterval(intervalID2)
     stopSeed = true
   })
+}
+
+export const initSeed = (acc) => {
+  console.log('in initSeed api')
+  console.log(acc)
+  getInitSeeds(acc)
 }
 
 // FILES API
@@ -653,6 +699,7 @@ export const upload = (hash, value, account, name, size) => {
                   dh = '0x' + dh.slice(4, dh.length)
                   console.log(dh)
 
+                  // TODO: THis doesn't always work
                   fileInst.addChunk(dh, {from: web3.eth.accounts[account], gas: 3000000}, (err, res) => {
                     if (err) console.log(err)
 
