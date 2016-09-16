@@ -235,7 +235,7 @@ function getSeeds () {
       _faddy = managerInst.files(fcount)
       _filesInst = getFileContract(_faddy)
       fcount++
-      _filesInst.addSeeder(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount], {from: web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount], gas: 3000000})
+      //_filesInst.addSeeder(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount], {from: web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount], gas: 3000000})
       console.log('added seeder to file contract: ')
       console.log(managerInst.files(fcount))
 
@@ -282,14 +282,106 @@ function getSeeds () {
   return
 }
 
-function challenge () {
+function c () {
   // grab the current seeds from the store.
+  var currentStore = store.getState()
+  var chunks = currentStore.seedReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount]
+  var _managerInst = getManagerContract()
+  var _filesInst
+  // TODO: need one for each chunk
+  var prevchal = '0x0000000000000000000000000000000000000000000000000000000000000000'
+  var tick = 0
+
+  console.log('challenge function chunks')
+  console.log(chunks)
 
   // for each seed contract, get the latest challenge hash
+  each(chunks.chunks, (element, callback) => {
+    console.log(element.address)
+    console.log('-------------------')
+    _filesInst = getFileContract(element.address)
+    if (_filesInst.address == 'test.jpg') {
+      callback()
+      return
+    }
 
-  // ipfs get the chunks (should be in local storage)
+    _filesInst.challengeHash((err, res) => {
+      if (err) {
+        console.log(err)
+      }
+      console.log(res)
 
-  // slice the first 100 bytes
+      // assume first seen challenge hash is 0x0
+      // then first round will always skip to awnsering a current challenge
+      // unless a contract has never been challenged
+      // The first client to see that their challenge hash local 
+      // equals the contract hash, will set a new challenge hash
+      // TODO: Change this to round, theres random chance that 
+      // a challenge hash will be the same one after reseting causing
+      // the client to skip a viable challenge round for the same hash
+      // as the previous round. Review timing issues here.
+      if (res === prevchal) {
+        _filesInst.setNewChallenge({from: web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount], gas: 3000000})
+        callback()
+        return
+      } else {
+        // ipfs get the chunks (should be in local storage)
+        var _h = _filesInst.challengeHash()
+        _h = '1220' + _h.slice(2, _h.length)
+        ipfs.get(new Buffer(_h, 'hex'), (err, res) => {
+          if (err) {
+            console.log(err)
+          }
+
+          // slice the first 100 bytes
+
+          res.pipe(concat((_files) => {
+            _files[0].content.pipe(concat((_content) => {
+              console.log('returned data from challenge hash')
+              console.log(_content)
+
+              // we need to take a smaller chunk from the full chunk
+              // for the hash to be stored in the contract 
+              // since contracts can only verify 32 bytes atm
+              // TODO: account for chunks < 100 bytes
+              var s =  _content.toString('hex')
+              console.log(s)
+              console.log(s.length)
+              s = '0x' + s
+
+
+              _filesInst.challenge(s, {from: web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount], gas: 3000000}, (err, res) => {
+                if (err) console.log(err)
+
+                setTimeout(wait2, 20000)
+
+                function wait2() {
+                  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!')
+                  console.log('new challenge info')
+                  console.log(_filesInst.test())
+                  console.log('balance')
+                  console.log(_filesInst.balance())
+                  console.log(_filesInst.seeders(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount])[2])
+                  console.log(_filesInst.seeders(web3.eth.accounts[currentStore.accountReducer.toJSON().activeAccount])[0])
+                  // update UI state when finished
+                  prevchal = _filesInst.challengeHash()
+                  
+                }
+
+              })
+
+            }))
+          }))
+
+        })
+        callback()
+      }
+    })
+    
+  }, (err) => {
+    console.log('finshed awnsering challenges')
+  })
+
 
   // send the hex of the chunk to the contract
 
@@ -431,7 +523,7 @@ export const startSeeding = () => {
 
     function challenge() {
       console.log('challenge triggered')
-
+      c()
       //challenge all existing seeds
     }
 
@@ -596,6 +688,8 @@ export const upload = (hash, value, account, name, size) => {
           })
         } else {
           console.log('links > 0')
+          // set the number of chunks in the contract
+          fileInst.setNumChunks(res.links.length, {from: web3.eth.accounts[0], gas: 1000000})
           // for now we assume all objects will be files
           // and each file will contain one level of chunks
           // see possible hash problems with larger files
