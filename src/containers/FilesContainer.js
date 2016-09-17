@@ -11,7 +11,7 @@ export const FilesContainer = React.createClass({
     var currentStore = store.getState()
     var files = []
     let rand
-          console.log(currentStore)
+    console.log(currentStore)
     //var h = currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].hash
     //console.log(currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files.length)
     for(var i = 0; i < currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files.length; i++) {
@@ -48,9 +48,15 @@ export const FilesContainer = React.createClass({
       console.log('files store subscribe triggered')
       console.log(currentStore.filesReducer.toJSON().user)
       console.log(currentStore.filesReducer.toJSON().user[acc])
-
+      
+      // this wont load the other accounts ipfs hash from the contract
+      // when switching accounts since it has an object from the first accounts
+      // view of the data.
+      // solution don't store the user object as an array for each account,
+      // only have the contract map to ipfs hashes that represent that account alone
       if (currentStore.filesReducer.toJSON().user[acc] === undefined) {
-        api.getInitFile(acc)
+        console.log('#####################')
+        api.getInitFile(acc, currentStore.filesReducer.toJSON().user)
         return
       }
 

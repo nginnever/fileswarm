@@ -7,14 +7,14 @@ export const Files = React.createClass({
 		return(
 			<div>
 
-			<table>
-			  <thead>
+			<table className="noborder">
+			  <thead className="bgcolor">
 			    <tr>
 			      <th className="seedcenter" style={{width: 200}}> Upload File</th>
 			      <th className="seedcenter" style={{width: 200}}> Contract Settings</th>
 			    </tr>
 			  </thead>
-			  <tbody>
+			  <tbody className="bgcolor">
 			  	<tr>
 			      <td className="seedcenter"> Select file[0] (no dynamic array support yet) </td>
 			      <td className="seedcenter"> File Ξther Value (Higher values will seed longer) </td>
@@ -34,7 +34,22 @@ export const Files = React.createClass({
 			      <td className="seedcenter">{this.props.hash}</td>
 			      <td className="seedcenter" style={{color: 'red'}}>Warning this will spend Ether </td>
 			    </tr>
-			    <tr></tr>
+			    <tr>
+			      <td></td>
+			      <td></td>
+			    </tr>
+			    <tr>
+			      <td></td>
+			      <td></td>
+			    </tr>
+			    <tr>
+			      <td></td>
+			      <td></td>
+			    </tr>
+			    <tr>
+			      <td></td>
+			      <td></td>
+			    </tr>
 			  </tbody>
 			</table>
 

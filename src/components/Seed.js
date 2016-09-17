@@ -6,14 +6,14 @@ export const Seed = React.createClass({
 	render: function() {
 		return(
 			<div>
-			<table>
-			  <thead>
+			<table className="noborder">
+			  <thead className="bgcolor">
 			    <tr>
 			      <th className="seedcenter" style={{width: 200}}> Diskspace Options</th>
 			      <th className="seedcenter" style={{width: 200}}> Network Stats</th>
 			    </tr>
 			  </thead>
-			  <tbody>
+			  <tbody className="bgcolor">
 			  	<tr>
 			      <td className="seedcenter"> Choose Amount To Seed </td>
 			      <td className="seedcenter"> IPFS: Online | Geth: Online < /td>
@@ -35,10 +35,11 @@ export const Seed = React.createClass({
 			    </tr>
 			    <tr>
 			      <td className="seedcenter"><input ref="max" type="text" size="15" onChange={() => this.props.setmax(this.refs.max)}/></td>
+			      <td></td>
 			    </tr>
 			  </tbody>
 			</table>
-			<table className="table-striped">
+			<table className="table-striped-seed">
 			  <thead>
 			    <tr>
 			      <th>File</th>

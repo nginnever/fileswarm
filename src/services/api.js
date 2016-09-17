@@ -100,31 +100,39 @@ function getInitSeeds (acc) {
   })
 }
 
-function getInitFiles (acc) {
+function getInitFiles (acc, _user) {
   return new Promise((resolve, reject) => {
     const _manager = getManagerContract()
     var fileshash = _manager.userFiles(web3.eth.accounts[acc])[0]
     console.log('database files hash: ')
     console.log(_manager.userFiles(web3.eth.accounts[acc])[0])
+    var tempUser = [
+      {
+        files: [
+          {
+            hash: 'test-file',
+            name: 'test.jpg',
+            size: 20309209,
+            balance: 1337
+          }
+        ]
+      }
+    ]
 
     // TODO: find a better way to access struct values in web3
     console.log(fileshash)
     if (fileshash === '0x0000000000000000000000000000000000000000000000000000000000000000') {
-      var user = [
-        {
-          files: [
-            {
-              hash: 'test-file',
-              name: 'test.jpg',
-              size: 20309209,
-              balance: 1337
-            }
-          ]
+      if (_user.length < acc) {
+        for (var i = 1; i <= acc; i++) {
+          if (_user[i] === undefined) _user.splice(i, 1, tempUser[0])
         }
-      ]
+      }
+      //_user.splice(2, 1, tempUser[0])
+      console.log('@@@@@@@@@@@@')
+      console.log(_user)
       store.dispatch({
         type: 'GET_FILES',
-        files: { user: user }
+        user: { user: _user }
       })
       resolve()
     } else {
@@ -140,6 +148,11 @@ function getInitFiles (acc) {
             console.log('USER OBJECT from db returned')
             var userArr = JSON.parse(_users.toString())
             console.log(userArr)
+
+            if (userArr[0] === undefined) {
+              console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+              userArr = tempUser
+            }
 
             var manager = getManagerContract()
             var fonline = manager.filecount().c[0]
@@ -602,6 +615,8 @@ export const upload = (hash, value, account, name, size) => {
       balance: value
     })
     
+    user.splice(0, 2)
+    
     console.log('NEW USER FILES ARRAY')
     console.log(user)
 
@@ -630,6 +645,9 @@ export const upload = (hash, value, account, name, size) => {
       fh = fh.slice(4, fh.length)
       fh = '0x' + fh
       console.log(fh)
+
+      console.log('CHECKING ADDRESS BEFORE CONTRACT CREATE FILE')
+      console.log(web3.eth.accounts[account])
 
       managerInst.createFile(ts, fh, {from: web3.eth.accounts[account], value: value.toString(), gas:3000000}, (err, res) => {
         console.log(res)
@@ -760,9 +778,9 @@ export const upload = (hash, value, account, name, size) => {
 //   })
 // }
 
-export const getInitFile = (acc) => {
+export const getInitFile = (acc, _user) => {
   return new Promise((resolve, reject) => {
-    resolve(getInitFiles(acc))
+    resolve(getInitFiles(acc, _user))
   })
 }
 export const getFile = (file) => {

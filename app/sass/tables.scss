@@ -66,7 +66,7 @@ table-wrapper {
 
 .table-scroll-files {
   position:absolute;
-  height: 375px;
+  height: 395px;
   width: 100%;
   overflow:scroll; 
   bottom: 0; 
@@ -75,6 +75,14 @@ table-wrapper {
 .table-scroll-header {
   position:absolute;
   width: 100%;
-  bottom: 375px;
+  bottom: 395px;
   overflow:scroll; 
+}
+
+.bgcolor {
+  background-color: #f3fafd;
+}
+
+.noborder {
+  border-collapse:collapse;
 }
