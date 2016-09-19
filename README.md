@@ -4,7 +4,7 @@
 
 #fileswarm
 
-A distributed file storage platform built with <a href="ipfs.io">IPFS</a> and <a href="ethereum.org">Ethereum</a>. Get paid to host files and pay seeders to host your files. Fileswarm is using a blockchain for publishing permissions on files and maintains registries for file properties like seeder health, value, and links to <a href="https://github.com/jbenet/random-ideas/issues/20">merkle-dag</a> objects. Your data is chunked and stored on nodes in the IPFS network and ready for you to retreive at any time via [dht query](https://github.com/ipfs/go-ipfs/issues/1396#issuecomment-113445913). Cryptographically secure challenges  ensure that your data persists at a cost less than that of traditional companies. Private files can be encrypted by the clients preferred algorithm before seeding.
+A distributed file storage platform built with <a href="ipfs.io">IPFS</a> and <a href="ethereum.org">Ethereum</a>. Get paid to host files and pay seeders to host your files. Fileswarm is using a blockchain for publishing permissions on files and maintains registries for file properties like seeder health, value, and links to <a href="https://github.com/jbenet/random-ideas/issues/20">merkle-dag</a> objects. Your data is chunked and stored on nodes in the IPFS network and ready for you to retrieve at any time via [dht query](https://github.com/ipfs/go-ipfs/issues/1396#issuecomment-113445913). Cryptographically secure challenges  ensure that your data persists at a cost less than that of traditional companies. Private files can be encrypted by the clients preferred algorithm before seeding.
 
 *Fileswarm is in early development and SHOULD NOT be used with real ether. Beware if you venture off testnets.
 
@@ -44,23 +44,23 @@ See also [CHANGELOG](https://github.com/nginnever/fileswarm/blob/master/CHANGELO
 
 ## How It Works
 
-fileswarm is an application built from great ideas. Currently this is a basic implementation of a distributed file system similiar to [storj](https://storj.io/). This currently lacks file encryption before uploading, erasure coding for redundancy, and while files are chunked into merkle dags, there is no SPV style merkle auditing done on this as of yet, the current system is simple and described in the 'challenges' section below. What this does do is demonstrate leveraging two prexisting sytems (IPFS and Ethereum) whereby the Ethereum EVM can execute the same process of creating a [multihash](https://github.com/multiformats/multihash) as the IPFS client and verify that any arbitrary (small) amount of data matches that hash. Sharding of files is achieved (although currently just basic fixed sized chunking) and presented to a distributed network. A blockchain can then maintain permissions and verifiablility over this network. More detail on both IPFS and Ethereum is availble though their respective project spaces.
+fileswarm is an application built from great ideas. Currently this is a basic implementation of a distributed file system similar to [storj](https://storj.io/). This currently lacks file encryption before uploading, erasure coding for redundancy, and while files are chunked into merkle dags, there is no SPV style merkle auditing done on this as of yet, the current system is simple and described in the 'challenges' section below. What this does do is demonstrate leveraging two preexisting systems (IPFS and Ethereum) whereby the Ethereum EVM can execute the same process of creating a [multihash](https://github.com/multiformats/multihash) as the IPFS client and verify that any arbitrary (small) amount of data matches that hash. Sharding of files is achieved (although currently just basic fixed sized chunking) and presented to a distributed network. A blockchain can then maintain permissions and verifiability over this network. More detail on both IPFS and Ethereum is available though their respective project spaces.
 
 #### Uploading-Downloading
 
-When uploading a file, the application will chunk the file and create [merkle dag objects](https://github.com/ipfs/specs/tree/master/merkledag) with IPFS. You must select an input value in Ether to supply the file contract that will be created next to fund the seeders that will be responding to the file's challenges. The rate that file contracts set new challenges is fixed so assuming that there is always a seeder reponding, the more value supplied the longer the file will be seeded. Your file is attached to your Ethereum public key. An identity like uPort can be applied to this key and with your key the files upload can be retrieved from any other location. 
+When uploading a file, the application will chunk the file and create [merkle dag objects](https://github.com/ipfs/specs/tree/master/merkledag) with IPFS. You must select an input value in Ether to supply the file contract that will be created next to fund the seeders that will be responding to the file's challenges. The rate that file contracts set new challenges is fixed so assuming that there is always a seeder responding, the more value supplied the longer the file will be seeded. Your file is attached to your Ethereum public key. An identity like uPort can be applied to this key and with your key the files upload can be retrieved from any other location. 
 
 #### Seeding
 
-Seeding is done by consulting the manager contract that creates each individual file contract to find new files to seed. There is a global array of all active files in the manager. The application will iterate over each file at random and add themelves as a seeder to the file if applicable. If applicable here means that the seeder is able to download the file either from the source that is still online or from another seeder and that the file is not already at it's max amount of seeders and the seeder is not currently seeding that file. An uploader can currently only be garunteed that their file exists on the number of max seeders ethereum addresses. Future plans for erasure coding and better redundancy can be explored if there is enough interest. The seeder will awarded ether for answering challenges that prove they have the file.
+Seeding is done by consulting the manager contract that creates each individual file contract to find new files to seed. There is a global array of all active files in the manager. The application will iterate over each file at random and add themselves as a seeder to the file if applicable. If applicable here means that the seeder is able to download the file either from the source that is still online or from another seeder and that the file is not already at it's max amount of seeders and the seeder is not currently seeding that file. An uploader can currently only be guaranteed that their file exists on the number of max seeders ethereum addresses. Future plans for erasure coding and better redundancy can be explored if there is enough interest. The seeder will awarded ether for answering challenges that prove they have the file.
 
 #### Challenges
 
-fileswarm challenges are currently simple. The rate that file contracts set new challenges is fixed to 1 minute. The amount that the contract pays to seeders during each challenge round can be set (coming soon!) creating a market for seeders to pick up the most favorable files. The application stores pointers to the chunks of file data in the file smart contract, the IPFS multihashes.  One of these pointers is selected by the contract every minute at random. Randomness provided by the blocknumber. If the seeder can respond to the contract with the right bytes that hash to that pointer, the contract will award the seeder with X amount of ether.
+fileswarm challenges are currently simple. The rate that file contracts set new challenges is fixed to 1 minute. The amount that the contract pays to seeders during each challenge round can be set (coming soon!) creating a market for seeders to pick up the most favorable files. The application stores pointers to the chunks of file data in the file smart contract, the IPFS multihashes.  One of these pointers is selected by the contract every minute at random. Randomness provided by the block number. If the seeder can respond to the contract with the right bytes that hash to that pointer, the contract will award the seeder with X amount of ether.
 
 #### Payments
 
-Payments to the seeders are made automatically on every successful challenge completetion. When a file runs out of funds set from the original upload, it will be removed from the list for seeders to download from.
+Payments to the seeders are made automatically on every successful challenge competition. When a file runs out of funds set from the original upload, it will be removed from the list for seeders to download from.
 
 #### Costs
 
@@ -129,13 +129,13 @@ With webpack dev server:
 
 With IPFS gateway:
 
-- nagivate to http://localhost:8080/ipfs/Qm...
+- navigate to http://localhost:8080/ipfs/Qm...
 
 The application will initialize a user object to track your files and store it in your IPFS db. with a pointer stored in the manager contract for your user account address.
 
 #### Upload
 
-To upload a file simply click on the file selector and choose a file. You will see a Qm... multihash appear as the file is loaded into the application. This file is not in the IPFS network. Nobody will find this file unless they request it.
+To upload a file simply click on the file selector and choose a file. You will see a Qm... multihash appear as the file is loaded into the application. This file is now in the IPFS network. Nobody will find this file unless they request it.
 
 Next choose an amount in Wei (lowest Ether denomination) and then click upload. Please allow time for the miners to execute your transaction and your file will appear in the main view.
 
@@ -143,11 +143,11 @@ You will see a multihash of your file, some details of the file, the balance rem
 
 #### Seed
 
-To seed select the seed tab from the dashboard. If you have not already you will need to unlock your account with the button in the bottom right of the application. Once unlocked you must then select a max diskpace allowed and slide the ammount of space you would like to seed over. Now click seed and you will start to see files appear in the main view. Each hash is a file you are able to seed upon request and your balance will periodically increase as you answer challenges on those files.
+To seed select the seed tab from the dashboard. If you have not already you will need to unlock your account with the button in the bottom right of the application. Once unlocked you must then select a max diskspace allowed and slide the amount of space you would like to seed over. Now click seed and you will start to see files appear in the main view. Each hash is a file you are able to seed upon request and your balance will periodically increase as you answer challenges on those files.
 
 #### Contribute
 
-contribution guidlines coming soon!
+contribution guidelines coming soon!
 
 #### Roadmap
 
