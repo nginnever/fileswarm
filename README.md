@@ -22,6 +22,7 @@ A distributed file storage platform built with <a href="ipfs.io">IPFS</a> and <a
   - [Build Source](#build-source)
 - [Quick Start Guide](#quickstart-guide)
   - [Requirements](#requirements)
+  - [Testnet](#testnet)
   - [Init](#init)
   - [Upload](#upload)
   - [Seed](#seed)
@@ -128,6 +129,17 @@ Start geth with the following flags, it is important to allow cors headers on th
 ```
 geth --rpc --rpcaddr "localhost" --rpcport 8545 --rpccorsdomain "*" --rpcapi="db,eth,net,web3,personal,web3,debug" --datadir "<your geth install path>/.etherum/testchain" --unlock "<coinbase>" --testnet console
 ```
+
+In order to use fileswarm you will need a small amount of ether to start adding yourself to seed contracts and answer challenges. Once challenge cycles have been entered the application will increase the balance of the seeder.
+
+To obtain Morden testnet ether you can try a faucet here:
+
+``http://icarus.parity.io/rain/<your_ether_address>``
+
+or ZeroGox:
+
+``https://zerogox.com/ethereum/wei_faucet``
+
 
 #### Init
 
