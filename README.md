@@ -46,5 +46,26 @@ See also [CHANGELOG](https://github.com/nginnever/fileswarm/blob/master/CHANGELO
 
 ## How It Works
 
-#### IPFS
-#### Ethereum
+fileswarm is an application built from great ideas. Currently this is a basic implementation of a distributed file system similiar to [storj](https://storj.io/). This currently lacks file encryption before uploading, erasure coding for redundancy, and while files are chunked into merkle dags, there is no SPV style merkle auditing done on this as of yet, the current system is simple and described in the 'challenges' section below. What this does do is demonstrate leveraging two prexisting sytems (IPFS and Ethereum) whereby the Ethereum EVM can execute the same process of creating a [multihash](https://github.com/multiformats/multihash) as the IPFS client and verify that any arbitrary (small) amount of data matches that hash. Sharding of files is achieved (although currently just basic fixed sized chunking) and presented to a distributed network. A blockchain can then maintain permissions and verifiablility over this network. More detail on both IPFS and Ethereum is availble though their respective project spaces.
+
+#### Uploading
+
+When uploading a file, the application will chunk the file and create [merkle dag objects](https://github.com/ipfs/specs/tree/master/merkledag) with IPFS. You must select an input value in Ether to supply the file contract that will be created next to fund the seeders that will be responding to the file's challenges. The rate that file contracts set new challenges is fixed so assuming that there is always a seeder reponding, the more value supplied the longer the file will be seeded. Your file is attached to your Ethereum public key. An identity like uPort can be applied to this key and with your key the files upload can be retrieved from any other location. 
+
+#### Seeding
+
+Seeding is done by consulting the manager contract that creates each individual file contract to find new files to seed. There is a global array of all active files in the manager. The application will iterate over each file at random and add themelves as a seeder to the file if applicable. If applicable here means that the seeder is able to download the file either from the source that is still online or from another seeder and that the file is not already at it's max amount of seeders and the seeder is not currently seeding that file. An uploader can currently only be garunteed that their file exists on the number of max seeders ethereum addresses. Future plans for erasure coding and better redundancy can be explored if there is enough interest. The seeder will awarded ether for answering challenges that prove they have the file.
+
+#### Challenges
+
+fileswarm challenges are currently simple. The rate that file contracts set new challenges is fixed to 1 minute. The amount that the ccontract pays to seeders during each challenge round can be set (coming soon!) creating a market for seeders to pick up the most favorable files. The application stores pointers to the chunks of file data in the file smart contract, the IPFS multihashes.  One of these pointers is selected by the contract every minute at random. Randomness provided by the blocknumber. If the seeder can respond to the contract with the right bytes that hash to that pointer, the contract will award the seeder with X amount of ether.
+
+#### Payments
+
+Payments to the seeders are made automatically on every successful challenge completetion. When a file runs out of funds set from the original upload, it will be removed for the list for seeders to download.
+
+#### Costs
+
+Ethereum gas prices will be paid by both the uploaders and seeders. The amount of costs placed on the seeder to execute the contract code to verify hashes should be payed by the uploader when the initial value is set.
+
+TODO: Get cost metrics
