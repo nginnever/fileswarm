@@ -20,7 +20,7 @@ A distributed file storage platform built with <a href="ipfs.io">IPFS</a> and <a
 - [Install](#install)
   - [Dev Server](#dev-server)
   - [Build Source](#build-source)
-- [Quick Start Guide](#quick-start-guide)
+- [Quick Start Guide](#quickstart-guide)
   - [Requirements](#requirements)
   - [Init](#init)
   - [Upload](#upload)
@@ -107,19 +107,26 @@ CORS: Set the IPFS daemon to accept requests from localhost
 
 Geth: See [geth install](https://github.com/ethereum/go-ethereum/wiki/geth)
 
-Testnet:
+####Testnet:
 
-(Currently local testnets only, TODO: Deploy my own or to Morden)
-Start geth with the following flags, create the testnet
-
-```
-geth --rpc --rpcaddr "localhost" --rpcport 8545 --rpccorsdomain "*" --rpcapi="db,eth,net,web3,personal,web3,debug" --datadir "<your geth install path>/Ethereum/TestChain1" --networkid 1337 --unlock "<coinbase>" testnet
-```
-
-And then start geth with console
+Connect to morden testnet
 
 ```
-geth --rpc --rpcaddr "localhost" --rpcport 8545 --rpccorsdomain "*" --rpcapi="db,eth,net,web3,personal,web3,debug" --datadir "<your geth install path>/Ethereum/TestChain1" --networkid 1337 --unlock "<coinbase>" testnet
+geth --testnet console
+```
+
+Create new account if needed
+
+```
+geth --testnet account new
+```
+
+You will see a new directory in your .ethereum/Testchain1 folder, wait for the morden testnet to sync up.
+
+Start geth with the following flags, it is important to allow cors headers on the client and enable the rpcapi. 
+
+```
+geth --rpc --rpcaddr "localhost" --rpcport 8545 --rpccorsdomain "*" --rpcapi="db,eth,net,web3,personal,web3,debug" --datadir "<your geth install path>/.etherum/testchain" --unlock "<coinbase>" --testnet console
 ```
 
 #### Init
