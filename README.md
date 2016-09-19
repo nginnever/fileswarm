@@ -24,9 +24,7 @@ A distributed file storage platform built with <a href="ipfs.io">IPFS</a> and <a
   - [Requirements](#requirements)
   - [Init](#init)
   - [Upload](#upload)
-  - [Download](#download)
   - [Seed](#seed)
-- [Data Model](#data-model)
 - [Contribute](#contribute)
 - [Roadmap](#roadmap)
 - [License](#license)
@@ -69,3 +67,95 @@ Payments to the seeders are made automatically on every successful challenge com
 Ethereum gas prices will be paid by both the uploaders and seeders. The amount of costs placed on the seeder to execute the contract code to verify hashes should be payed by the uploader when the initial value is set.
 
 TODO: Get cost metrics
+
+## Install
+
+fileswarm is a react/redux application and can be ran in the browser and with electron.
+
+requirements:
+
+- node.js
+- npm
+
+```
+git clone https://github.com/nginnever/fileswarm.git
+cd fileswarm
+sudo npm i
+```
+
+#### Dev-server
+
+Webpack hot reload server
+
+``webpack-dev-server --host 0.0.0.0 --port 1337``
+
+#### Build Source
+
+currently electron isn't compatible with the ipfs webpack build so it won't work atm. 
+
+``npm run build-osx``
+
+## Quickstart Guide
+
+#### Requirements
+
+IPFS: See IPFS [install guide](https://ipfs.io/docs/install/). Soon the binary will be bundled with an install version.
+
+CORS: Set the IPFS daemon to accept requests from localhost
+
+``ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"http://example.com\"]"``
+
+Geth: See [geth install](https://github.com/ethereum/go-ethereum/wiki/geth)
+
+Testnet:
+
+Start geth with the following flags, create the testnet
+
+```
+geth --rpc --rpcaddr "localhost" --rpcport 8545 --rpccorsdomain "*" --rpcapi="db,eth,net,web3,personal,web3,debug" --datadir "<your geth install path>/Ethereum/TestChain1" --networkid 1337 --unlock "<coinbase>" testnet
+```
+
+And then start geth with console
+
+```
+geth --rpc --rpcaddr "localhost" --rpcport 8545 --rpccorsdomain "*" --rpcapi="db,eth,net,web3,personal,web3,debug" --datadir "<your geth install path>/Ethereum/TestChain1" --networkid 1337 --unlock "<coinbase>" testnet
+```
+
+#### Init
+
+With webpack dev server:
+
+- navigate to http://localhost:1337
+
+With IPFS gateway:
+
+- nagivate to http://localhost:8080/ipfs/Qm...
+
+The application will initialize a user object to track your files and store it in your IPFS db. with a pointer stored in the manager contract for your user account address.
+
+#### Upload
+
+To upload a file simply click on the file selector and choose a file. You will see a Qm... multihash appear as the file is loaded into the application. This file is not in the IPFS network. Nobody will find this file unless they request it.
+
+Next choose an amount in Wei (lowest Ether denomination) and then click upload. Please allow time for the miners to execute your transaction and your file will appear in the main view.
+
+You will see a multihash of your file, some details of the file, the balance remaining on the file contract, number of seeders hosting your file, and download link that will request your file from IPFS.
+
+#### Seed
+
+To seed select the seed tab from the dashboard. If you have not already you will need to unlock your account with the button in the bottom right of the application. Once unlocked you must then select a max diskpace allowed and slide the ammount of space you would like to seed over. Now click seed and you will start to see files appear in the main view. Each hash is a file you are able to seed upon request and your balance will periodically increase as you answer challenges on those files.
+
+#### Contribute
+
+contribution guidlines coming soon!
+
+#### Roadmap
+
+TODO
+
+- Write TODO list :D
+
+#### License
+
+MIT
+
