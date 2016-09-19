@@ -1,8 +1,8 @@
-#fileswarm
-
 ![](https://ipfs.io/ipfs/QmUqiP7KBUJgEcAkK7LzbQEeyQaYDrcGLUw8Gm9gtqTX1v)
 ![](https://ipfs.io/ipfs/QmSZqvpASNXqeKHtb4rvTh29gYGFrFUGWTPtJxi8Rfs8xf)
 ![](https://ipfs.io/ipfs/QmPqmaHKDJRGmavbSMDkxMD26M3KD4xg96FvX86UyKKq6x)
+
+#fileswarm
 
 A distributed file storage platform built with <a href="ipfs.io">IPFS</a> and <a href="ethereum.org">Ethereum</a>. Get paid to host chunks of files and pay seeders to host your files. Fileswarm is using a blockchain for publishing permissions on files and maintains registries for file properties like seeder health, value, and links to <a href="https://github.com/jbenet/random-ideas/issues/20">merkle-dag</a> objects. Your data is chunked and stored on nodes in the IPFS network and ready for you to retreive at any time via dht query. Cryptographically secure challenges  ensure that your data persists at a cost less than that of traditional companies. Private files can be encrypted by the clients preferred algorithm before seeding.
 
