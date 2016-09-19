@@ -121,7 +121,7 @@ Create new account if needed
 geth --testnet account new
 ```
 
-You will see a new directory in your .ethereum/Testchain1 folder, wait for the morden testnet to sync up.
+You will see a new directory in your .ethereum/testnet folder, wait for the morden testnet to sync up.
 
 Start geth with the following flags, it is important to allow cors headers on the client and enable the rpcapi. 
 
@@ -137,7 +137,7 @@ With webpack dev server:
 
 With IPFS gateway:
 
-- navigate to http://localhost:8080/ipfs/Qm...
+- navigate to http://localhost:8080/ipfs/QmR2nmPqpMBxyA2msZvnVokiz7EdKZd8g5D325jhqunpWH
 
 The application will initialize a user object to track your files and store it in your IPFS database with a pointer stored in the manager contract for your user account address.
 
