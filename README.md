@@ -109,6 +109,7 @@ Geth: See [geth install](https://github.com/ethereum/go-ethereum/wiki/geth)
 
 Testnet:
 
+(Currently local testnets only, TODO: Deploy my own or to Morden)
 Start geth with the following flags, create the testnet
 
 ```
