@@ -4,7 +4,7 @@
 
 #fileswarm
 
-A distributed file storage platform built with <a href="ipfs.io">IPFS</a> and <a href="ethereum.org">Ethereum</a>. Get paid to host chunks of files and pay seeders to host your files. Fileswarm is using a blockchain for publishing permissions on files and maintains registries for file properties like seeder health, value, and links to <a href="https://github.com/jbenet/random-ideas/issues/20">merkle-dag</a> objects. Your data is chunked and stored on nodes in the IPFS network and ready for you to retreive at any time via dht query. Cryptographically secure challenges  ensure that your data persists at a cost less than that of traditional companies. Private files can be encrypted by the clients preferred algorithm before seeding.
+A distributed file storage platform built with <a href="ipfs.io">IPFS</a> and <a href="ethereum.org">Ethereum</a>. Get paid to host files and pay seeders to host your files. Fileswarm is using a blockchain for publishing permissions on files and maintains registries for file properties like seeder health, value, and links to <a href="https://github.com/jbenet/random-ideas/issues/20">merkle-dag</a> objects. Your data is chunked and stored on nodes in the IPFS network and ready for you to retreive at any time via dht query. Cryptographically secure challenges  ensure that your data persists at a cost less than that of traditional companies. Private files can be encrypted by the clients preferred algorithm before seeding.
 
 *Fileswarm is in early development and SHOULD NOT be used with real ether. Beware if you venture off testnets.
 
@@ -58,11 +58,11 @@ Seeding is done by consulting the manager contract that creates each individual 
 
 #### Challenges
 
-fileswarm challenges are currently simple. The rate that file contracts set new challenges is fixed to 1 minute. The amount that the ccontract pays to seeders during each challenge round can be set (coming soon!) creating a market for seeders to pick up the most favorable files. The application stores pointers to the chunks of file data in the file smart contract, the IPFS multihashes.  One of these pointers is selected by the contract every minute at random. Randomness provided by the blocknumber. If the seeder can respond to the contract with the right bytes that hash to that pointer, the contract will award the seeder with X amount of ether.
+fileswarm challenges are currently simple. The rate that file contracts set new challenges is fixed to 1 minute. The amount that the contract pays to seeders during each challenge round can be set (coming soon!) creating a market for seeders to pick up the most favorable files. The application stores pointers to the chunks of file data in the file smart contract, the IPFS multihashes.  One of these pointers is selected by the contract every minute at random. Randomness provided by the blocknumber. If the seeder can respond to the contract with the right bytes that hash to that pointer, the contract will award the seeder with X amount of ether.
 
 #### Payments
 
-Payments to the seeders are made automatically on every successful challenge completetion. When a file runs out of funds set from the original upload, it will be removed for the list for seeders to download.
+Payments to the seeders are made automatically on every successful challenge completetion. When a file runs out of funds set from the original upload, it will be removed from the list for seeders to download from.
 
 #### Costs
 
