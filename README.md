@@ -127,7 +127,7 @@ You will see a new directory in your .ethereum/testnet folder, wait for the mord
 Start geth with the following flags, it is important to allow cors headers on the client and enable the rpcapi. 
 
 ```
-geth --rpc --rpcaddr "localhost" --rpcport 8545 --rpccorsdomain "*" --rpcapi="db,eth,net,web3,personal,web3,debug" --datadir "<your geth install path>/.etherum/testchain" --unlock "<coinbase>" --testnet console
+geth --rpc --rpcaddr "localhost" --rpcport 8545 --rpccorsdomain "*" --rpcapi="db,eth,net,web3,personal,web3,debug" --datadir "<your geth install path>/.etherum" --unlock "<coinbase>" --testnet console
 ```
 
 In order to use fileswarm you will need a small amount of ether to start adding yourself to seed contracts and answer challenges. Once challenge cycles have been entered the application will increase the balance of the seeder.
