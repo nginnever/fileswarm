@@ -48,11 +48,11 @@ export const HeaderContainer = React.createClass({
   renderAccounts: function() {
     var _this = this
     accs = []
-    console.log(_this.state.accounts)
-    console.log(accs)
+    // console.log(_this.state.accounts)
+    // console.log(accs)
     currentStore = store.getState()
     let rand
-    console.log(currentStore.accountReducer.toJSON().activeAccount)
+    //console.log(currentStore.accountReducer.toJSON().activeAccount)
     for (var i = 0; i < currentStore.accountReducer.toJSON().accounts.length; i++) {
       rand = Math.floor(Math.random()*100000000000000000)
       if (i == currentStore.accountReducer.toJSON().activeAccount) {
@@ -61,7 +61,7 @@ export const HeaderContainer = React.createClass({
         accs.push(<option key={rand} value={i}>{currentStore.accountReducer.toJSON().accounts[i]}</option>)
       }
     }
-    console.log(accs)
+    //console.log(accs)
 
     _this.setState({
       options: accs
@@ -69,7 +69,6 @@ export const HeaderContainer = React.createClass({
 
   },
   openAccounts: function(test) {
-    console.log(test)
     var _this = this
     _this.setState({
       isOpenAccounts: true

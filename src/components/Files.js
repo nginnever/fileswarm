@@ -63,6 +63,7 @@ export const Files = React.createClass({
 			      <th style={{width: 80}}>Seeders</th>
 			      <th style={{width: 150}}>Balance</th>
 			      <th style={{width: 80}}>Available</th>
+			      <th style={{width: 150}}>Address</th>
 			      <th style={{width: 80}}>Download</th>
 			    </tr>
 			  </thead>

@@ -11,7 +11,6 @@ export const FilesContainer = React.createClass({
     var currentStore = store.getState()
     var files = []
     let rand
-    console.log(currentStore)
     //var h = currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].hash
     //console.log(currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files.length)
     for(var i = 0; i < currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files.length; i++) {
@@ -24,6 +23,7 @@ export const FilesContainer = React.createClass({
           <td>4</td>
 		      <td>Ξ {currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].balance}</td>
 		      <td>100%</td>
+          <td>{currentStore.filesReducer.toJSON().user[currentStore.accountReducer.toJSON().activeAccount].files[i].address.slice(0, 10) + '...'}</td>
 		      <td><span className="icon icon-download"></span></td>
 		    </tr>
     	)
@@ -46,8 +46,8 @@ export const FilesContainer = React.createClass({
         acc = currentStore.accountReducer.toJSON().activeAccount
       }
       console.log('files store subscribe triggered')
-      console.log(currentStore.filesReducer.toJSON().user)
-      console.log(currentStore.filesReducer.toJSON().user[acc])
+      // console.log(currentStore.filesReducer.toJSON().user)
+      // console.log(currentStore.filesReducer.toJSON().user[acc])
       
       // this wont load the other accounts ipfs hash from the contract
       // when switching accounts since it has an object from the first accounts
@@ -74,6 +74,7 @@ export const FilesContainer = React.createClass({
             <td>4</td>
             <td>Ξ {currentStore.filesReducer.toJSON().user[acc].files[i].balance}</td>
             <td>100%</td>
+            <td>{currentStore.filesReducer.toJSON().user[acc].files[i].address.slice(0, 10) + '...'}</td>
             <td><span className="icon icon-download"></span></td>
           </tr>
         )

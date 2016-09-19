@@ -36,7 +36,7 @@ export const SeedContainer = React.createClass({
       } else {
         acc = currentStore.accountReducer.toJSON().activeAccount
       }
-      console.log(currentStore.seedReducer.toJSON().user[acc])
+      //console.log(currentStore.seedReducer.toJSON().user[acc])
       if (currentStore.seedReducer.toJSON().user[acc] === undefined) {
       	console.log('test')
       	console.log(acc)

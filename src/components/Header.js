@@ -46,7 +46,7 @@ export const Header = React.createClass({
 
 			    <button className="btn btn-default pull-right">
 			      
-			      Balance: Ξ{this.props.balance[0] + '.' + this.props.balance[1]}
+			      Balance: Ξ{this.props.balance[0] + '.' + this.props.balance[1] + this.props.balance[2]}
 			    </button>
 			  </div>
 			</header>
