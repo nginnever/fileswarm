@@ -52,11 +52,11 @@ When uploading a file, the application will chunk the file and create [merkle da
 
 #### Seeding
 
-Seeding is done by consulting the manager contract that creates each individual file contract to find new files to seed. There is a global array of all active files in the manager. The application will iterate over each file at random and add themselves as a seeder to the file if applicable. If applicable here means that the seeder is able to download the file either from the source that is still online or from another seeder and that the file is not already at it's max amount of seeders and the seeder is not currently seeding that file. An uploader can currently only be guaranteed that their file exists on the number of max seeders. Future plans for erasure coding and better redundancy can be explored if there is enough interest. The seeder will be awarded ether for answering challenges that prove they have the file.
+Seeding is done by consulting the manager contract that creates each individual file contract to find new files to seed. There is a global array of all active files in the manager. The application will iterate over each file at random and add themselves as a seeder to the file if applicable. If applicable here means that the seeder is able to download the file either from the source that is still online or from another seeder and that the file is not already at it's max amount of seeders and the seeder is not currently seeding that file. An uploader can only be guaranteed that their file exists on the number of max seeders. Future plans for erasure coding and better redundancy can be explored if there is enough interest. The seeder will be awarded ether for answering challenges that prove they have the file.
 
 #### Challenges
 
-fileswarm challenges are currently simple. The rate that file contracts set new challenges is fixed to one minute. The amount that the contract pays to seeders during each challenge round can be set (coming soon!) creating a market for seeders to pick up the most favorable files. The application stores pointers to the chunks of file data in the file smart contract, the IPFS multihashes.  One of these pointers is selected by the contract every minute at random. Randomness provided by the block number. If the seeder can respond to the contract with the right bytes that hash to that pointer, the contract will award the seeder with X amount of ether.
+fileswarm challenges are simple. The rate that file contracts set new challenges is fixed to one minute. The amount that the contract pays to seeders during each challenge round can be set (coming soon!) creating a market for seeders to pick up the most favorable files. The application stores pointers to the chunks of file data in the file smart contract, the IPFS multihashes.  One of these pointers is selected by the contract every minute at random. Randomness provided by the block number. If the seeder can respond to the contract with the right bytes that hash to that pointer, the contract will award the seeder with X amount of ether.
 
 #### Payments
 
@@ -70,7 +70,7 @@ TODO: Get cost metrics
 
 ## Install
 
-fileswarm is a react/redux application and can be ran in the browser and with electron.
+fileswarm is a react/redux application and can be ran in the browser or with electron.
 
 requirements:
 
@@ -132,11 +132,11 @@ With IPFS gateway:
 
 - navigate to http://localhost:8080/ipfs/Qm...
 
-The application will initialize a user object to track your files and store it in your IPFS db. with a pointer stored in the manager contract for your user account address.
+The application will initialize a user object to track your files and store it in your IPFS database with a pointer stored in the manager contract for your user account address.
 
 #### Upload
 
-To upload a file simply click on the file selector and choose a file. You will see a Qm... multihash appear as the file is loaded into the application. This file is now in the IPFS network. Nobody will find this file unless they request it.
+To upload a file simply click on the file selector and choose a file. You will see a Qm... multihash appear as the file is loaded into the application. This file is now broadcast to the IPFS network. Nobody will find this file unless they request it.
 
 Next choose an amount in Wei (lowest Ether denomination) and then click upload. Please allow time for the miners to execute your transaction and your file will appear in the main view.
 
@@ -144,7 +144,7 @@ You will see a multihash of your file, some details of the file, the balance rem
 
 #### Seed
 
-To seed select the seed tab from the dashboard. If you have not already you will need to unlock your account with the button in the bottom right of the application. Once unlocked you must then select a max diskspace allowed and slide the amount of space you would like to seed over. Now click seed and you will start to see files appear in the main view. Each hash is a file you are able to seed upon request and your balance will periodically increase as you answer challenges on those files.
+To seed select the seed tab from the dashboard. If you have not already you will need to unlock your account with the button in the bottom right of the application. Once unlocked you must then select a max diskspace allowed and slide the amount of space you would like to seed over. Now click seed and you will start to see files appear in the main view. Each hash is a file you are able to seed and your balance will periodically increase as you answer challenges on those files.
 
 #### Contribute
 
