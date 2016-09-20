@@ -8,6 +8,7 @@
     "dev": "./node_modules/.bin/webpack-dev-server --content-base dist --inline --hot",
     "electron-rebuild": "./node_modules/.bin/electron-rebuild",
     "test": "./node_modules/.bin/mocha",
+    "build": "webpack",
     "build-osx": "node electron-build-osx.js"
   },
   "repository": {

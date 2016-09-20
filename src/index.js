@@ -25,7 +25,7 @@ const routes = <Route component={Main}>
 ReactDOM.render(
 	<div>
 	  <div className="innerLoad">
-	  	<h3 className="h3load">./initializing-fileswarm</h3>
+	  	<h3 className="h3load">initializing-fileswarm</h3>
 	  	<div className="lbar">
   	  <Loading type='bars' color='#fff' />
   	  </div>

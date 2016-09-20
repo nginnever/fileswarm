@@ -14,7 +14,7 @@ const concat = require('concat-stream')
 const ipfs = window.IpfsApi('localhost', '5001')
 const abiFile = require('../utils/abi.js').file
 const abiManager = require('../utils/abi.js').manager
-const managerAddy = '0x861a5dbd30b20c4b9069ae69d3e6c9c473a0a439'
+const managerAddy = '0x991074989f21c23e3390d8286fa1fdd7dfae4a5c'
 const CHUNK_SIZE = 262144
 // import lightwallet from 'eth-lightwallet'
 // import web3hook from 'hooked-web3-provider'
@@ -44,8 +44,8 @@ function setWeb3() {
   } else {
     // set the provider you want from Web3.providers
     // local server
-    web3 = new Web3(new Web3.providers.HttpProvider("http://192.168.0.28:8545"))
-    //web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
+    //web3 = new Web3(new Web3.providers.HttpProvider("http://192.168.0.28:8545"))
+    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
     // demo server
     // web3 = new Web3(new Web3.providers.HttpProvider("http://149.56.133.176:8545"))
   }
