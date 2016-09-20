@@ -173,7 +173,29 @@ contribution guidelines coming soon!
 
 TODO
 
-- Write TODO list :D
+- Break apart pyramid of doom functions
+  - c () seeding
+  - upload ()
+- Write unit tests
+  - React
+  - Solidity
+  - IPFS
+- Solidity
+  - add solidity and api methods for removig old files
+  - make picking up seeds at random index
+  - add events to listen to
+- Get cost metrics
+- UI updates
+  - Make main table resizable 
+  - fix position of table
+  - build toolbar
+  - make seeders and balance and success dynamic
+- Replace async with parallel
+- account for chunks < 100 bytes
+- better error handling
+- alerts for waiting for mining
+- fix electron build
+- fix js-ipfs
 
 #### License
 
