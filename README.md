@@ -8,7 +8,9 @@ A distributed file storage platform built with <a href="ipfs.io">IPFS</a> and <a
 
 *Fileswarm is in early development and SHOULD NOT be used with real ether. Beware if you venture off testnets.
 
-The Alpha client can be accessed here http://localhost:8080/ipfs/QmSw7h8MXg6MeQYvxF6thDXy77JvLZy9goC9bZ5kuWc7Hx
+The Alpha client can be accessed here:
+
+http://localhost:8080/ipfs/QmSw7h8MXg6MeQYvxF6thDXy77JvLZy9goC9bZ5kuWc7Hx
 
 ## Table of Contents
 
