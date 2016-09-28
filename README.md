@@ -61,7 +61,7 @@ Seeding is done by consulting the manager contract that creates each individual 
 
 #### Challenges
 
-fileswarm challenges are simple. The rate that file contracts set new challenges is fixed to one minute. The amount that the contract pays to seeders during each challenge round can be set (coming soon!) creating a market for seeders to pick up the most favorable files. The application stores pointers to the chunks of file data in the file smart contract, the IPFS multihashes.  One of these pointers is selected by the contract every minute at random. Randomness provided by the block number. If the seeder can respond to the contract with the right bytes that hash to that pointer, the contract will award the seeder with X amount of ether.
+fileswarm challenges are simple. The rate that file contracts set new challenges is fixed to one minute. The amount that the contract pays to seeders during each challenge round can be set (coming soon!) creating a market for seeders to pick up the most favorable files. The application stores pointers to the chunks of file data in the file smart contract, the IPFS multihashes.  One of these pointers is selected by the contract every minute at random. Randomness provided by the block height whereby the chunk chosen is the difference in blocks between challenge rounds. Assuming the success of miners confirming blocks takes a random amount of time. If the seeder can respond to the contract with the right bytes that hash to that pointer, the contract will award the seeder with X amount of ether.
 
 #### Payments
 
